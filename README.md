@@ -20,12 +20,6 @@
 
 qhwb-admin是基于vue2.0全家桶 + element-ui 开发的一个后台模板，实现了无限级菜单，页面、按钮级别的权限管理，为了减少前后端的沟通成本，页面、按钮级别的权限验证和动态路由表的存储校验，也都由前端完成，这样前端新建页面或者删除页面都不需要告诉后台去增加删除路由表
 
-![enter description here](https://i.loli.net/2019/12/24/Ocs7n45uaMDhKef.png)
-![enter description here](https://i.loli.net/2019/12/24/8dZaITtQOY7uNbF.png)
-![enter description here](https://i.loli.net/2018/12/12/5c10a2f90e38a.jpg)
-![enter description here](https://i.loli.net/2018/12/16/5c153f4998458.jpg)
-![enter description here](https://i.loli.net/2018/12/16/5c153fe516daf.jpg)
-![enter description here](https://i.loli.net/2018/12/12/5c102c115c130.jpg)
 ## 2. 准备工作
 -开发环境
 - node.js v8.0+
@@ -69,7 +63,7 @@ qhwb-admin是基于vue2.0全家桶 + element-ui 开发的一个后台模板，�
 ### 4.1开发
 ```
 # 克隆项目
-git clone https://github.com/Nirongxu/qhwb-admin.git
+git clone http://git.yfkjqh.com:3000/liaozhiliang/qhwb_admin.git
 
 # 推荐使用 yarn, 安装依赖基本上一次过,npm 经常会卡在node-sass,如果npm安装node-sass 失败,单独多安装几次应该就可以了: npm i node-sass -D
 
@@ -115,12 +109,6 @@ or
 npm run startdll
 ```
 
-### 4.2使用
-在开发和使用之前请务必阅读 `qhwb-admin`的使用介绍，详细介绍了框架的开发和使用教程
-- [Vue2.0 + ElementUI 手写权限管理系统后台模板（一）——简述](https://juejin.im/post/5c15332be51d4513ea6ed291)
-- [Vue2.0 + ElementUI 手写权限管理系统后台模板（二）——权限管理](https://juejin.im/post/5c1552a65188250850604bb0)
-- [Vue2.0 + ElementUI 手写权限管理系统后台模板（三）——页面搭建](https://juejin.im/post/5c156ae16fb9a049e660250c)
-- [Vue2.0 + ElementUI 手写权限管理系统后台模板（四）——组件结尾](https://juejin.im/post/5c1605e76fb9a049b41c5cb0)
 
 ## 5. 项目结构说明
 ```

@@ -23,8 +23,8 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: devEnv.PROXY_REQUEST === false ? {} : {
       '/api': {
-        // target: store.API_URL,
-        target: store.TEST_API_URL,
+        target: store.API_URL,
+        // target: store.TEST_API_URL,
         changeOrigin: true,
         pathRewrite: {
           '^/api': '/'
@@ -53,8 +53,8 @@ module.exports = {
      */
 
     // https://webpack.js.org/configuration/devtool/#development
-    devtool: 'cheap-module-eval-source-map',
-
+    // devtool: 'cheap-module-eval-source-map',
+    devtool: 'source-map',
     // If you have problems debugging vue-files in devtools,
     // set this to false - it *may* help
     // https://vue-loader.vuejs.org/en/options.html#cachebusting

@@ -97,4 +97,17 @@ export default {
    setNoticeStatus: "",
    // 删除公告
    delNotice: "/notice/delete",
+
+   // 获取新闻列表
+   getNewsList: "/notice/list",
+   // 新增新闻
+   addNews: "/news/insert",
+   // 编辑新闻
+   editNews: "/notice/update",
+   // 获取新闻详情
+   getNews: "/news/detail",
+   // 新闻状态修改
+   setNewsStatus: "",
+   // 删除新闻
+   delNews: "/news/delete",
 }

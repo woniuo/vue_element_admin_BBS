@@ -51,4 +51,23 @@ a{
   height: 3px !important;
   background: #56a9ff !important; //自定义颜色
 }
+// 遮罩层加载全局样式
+.hide-loading {
+  background: #fff;
+  -webkit-box-shadow: 4px 4px 40px rgba(0, 0, 0, 0.2);
+  box-shadow: 4px 4px 40px rgba(0, 0, 0, 0.2);
+  border-color: rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  z-index: 99999;
+}
+.hide-relative {
+  position: relative;
+}
 </style>

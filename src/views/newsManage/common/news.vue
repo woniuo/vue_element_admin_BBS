@@ -1,39 +1,31 @@
 <template>
   <div>
-    <el-card>
+    <el-card class="hide-relative">
+      <div v-if="loading" class="hide-loading loading">
+        <span class="el-icon-loading"></span>玩命加载中....
+      </div>
       <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px">
         <el-form-item label="标题" prop="title">
           <el-row :span="24">
             <el-col :span="12">
-              <el-input v-model="ruleForm.title"></el-input>
+              <el-input v-model="ruleForm.title" :disabled="disabled"></el-input>
             </el-col>
-            <el-col :span="12">
-              <el-row :span="24">
-                <el-col :span="12">
-                   <el-form-item  label="状态" prop="radio">
-                    <el-switch
-                      v-model="ruleForm.radio"
-                      active-color="#13ce66"
-                    ></el-switch>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="12">
-                  <el-form-item align="center">
-                    <el-button type="primary" @click="submitForm('ruleForm')">发 布</el-button>
-                    <el-button @click="resetForm('ruleForm')">重 置</el-button>
-                  </el-form-item>
-                </el-col>
-              </el-row>
+            <el-col :span="12" v-if="type == 'edit'">
+              <el-form-item align="center">
+                <el-button type="primary" @click="submitForm('ruleForm')">保 存</el-button>
+                <el-button @click="resetForm('ruleForm')">重 置</el-button>
+              </el-form-item>
             </el-col>
           </el-row>
         </el-form-item>
-        <el-form-item label="简介" prop="synopsis">
+        <el-form-item label="简介" prop="resume">
           <el-input
             type="textarea"
             placeholder="请输入内容"
-            v-model="ruleForm.synopsis"
+            v-model="ruleForm.resume"
             maxlength="200"
             show-word-limit
+            :disabled="disabled"
           ></el-input>
         </el-form-item>
         <el-form-item label="缩略图" prop="thumbnail">
@@ -45,6 +37,7 @@
             :on-success="handleAvatarSuccess"
             :on-progress="uploadFileProcess"
             :before-upload="beforeAvatarUpload"
+            :disabled="disabled"
           >
             <img v-if="ruleForm.imageUrl" :src="ruleForm.imageUrl" class="avatar" />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -64,31 +57,24 @@
 <script>
 import E from "wangeditor";
 export default {
-  name: "announcementPublish",
+  name: "news",
+   props: {
+        nid: Number
+    },
   data() {
     return {
       editor: null, // 保存富文本实例化对象
       progressFlag: false, // 进度条是否显示
       progressPercent: 0, // 进度条
-      dialogTableVisible: false,
-      userListData: [], // 用户列表数据
-      multipleSelection: [], // 用户选中的用户
       emptyText: "加载中...",
-      // 翻页搜索
-      searchPage: {
-        gender: "",
-        page: 1,
-        pageSize: 10,
-        phone: "",
-      },
-      totalCount: 0, // 总条数
-      totalPage: 0, // 总页数
+      loading: false,
+      type: "", // 类型
+      disabled: false, // 表达禁用状态
       ruleForm: {
         title: "", // 标题
-        synopsis: "", // 简介
+        resume: "", // 简介
         imageUrl: "", // 缩略图
         content: "", // 主体内容
-        radio: true, // 公告状态
       },
       rules: {
         title: [
@@ -139,12 +125,35 @@ export default {
     },
     uploadFileProcess(event, file, fileList) {
       fileList.forEach((item) => {
-        console.log(item.percentage);
         if (item.percentage === 100) {
         } else {
           this.progressFlag = true;
           this.progressPercent = Math.abs(item.percentage.toFixed(0));
         }
+      });
+    },
+    // 获取公共详情 type:1 查看, type:2 编辑
+    getNews(isFalg, nid) {
+      this.loading = true
+      this.$request.fetchGetNewsData({id: nid}).then((res) => {
+        if (res.data.code === 200) {
+          let { title, resume, content } = res.data.data
+          this.ruleForm = { title, resume, content }
+          // 初始化富文本内容
+          this.editor.txt.html(content)
+          // 判断如果是查看则禁用富文本
+          if (isFalg) {
+            this.editor.$textElem.attr('contenteditable', false)
+            this.disabled = true
+          } else {
+            this.editor.$textElem.attr('contenteditable', true)
+            this.disabled = false
+          }
+        } else {
+          this.$message.error("数据加载失败");
+        }
+        this.emptyText = "暂无数据";
+        this.loading = false
       });
     }
   },
@@ -160,8 +169,8 @@ export default {
       this.ruleForm.content = html;
     };
     editor.create();
-    this.editor.$textContainerElem.css("height", "500px !important"); //设置高度yo
-  },
+    this.editor.$textContainerElem.css("height", "500px !important"); //设置高度
+  }
 };
 </script>
 <style lang="scss" scoped>
@@ -203,5 +212,8 @@ export default {
 }
 .progress-box {
   width: 200px;
+}
+.loading > span {
+  font-size: 28px;
 }
 </style>

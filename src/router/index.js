@@ -233,26 +233,6 @@ let addRouter = [
             children: []
           },
           {
-            r_id: 10181,
-            r_name: roleName.announcementLook, // 公告查看
-            path: "/announcementLook",
-            iconCls: "fa iconfont icon-fabu",
-            name: "announcementLook",
-            component: () => import("@/views/messageManage/announcementManage/announcementLook"),
-            children: [],
-            hidden: true
-          },
-          {
-            r_id: 10182,
-            r_name: roleName.announcementEdit, // 公告编辑
-            path: "/announcementEdit",
-            iconCls: "fa iconfont icon-fabu",
-            name: "announcementEdit",
-            component: () => import("@/views/messageManage/announcementManage/announcementEdit"),
-            children: [],
-            hidden: true
-          },
-          {
             r_id: 1019,
             r_name: roleName.announcementList, // 公告列表
             path: "/announcementList",

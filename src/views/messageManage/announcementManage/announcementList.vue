@@ -32,7 +32,7 @@
             <span style="margin-left: 10px">{{ scope.row.id }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="标题" align="center" >
+        <el-table-column label="标题" align="center">
           <template slot-scope="scope">
             <div class="out-dot">{{ scope.row.title}}</div>
           </template>
@@ -55,9 +55,7 @@
         </el-table-column>
         <el-table-column label="操作" align="center" width="350">
           <template slot-scope="scope">
-              <router-link to="/announcementLook">
-                  <el-button  size="mini">查看公告</el-button>
-              </router-link>
+           <el-button size="mini" @click="lookNotice(scope.row.id)">查看公告</el-button>
             <el-popover
               placement="top"
               width="150"
@@ -88,7 +86,7 @@
               </template>
               <el-button size="mini" slot="reference">状态修改</el-button>
             </el-popover>
-            <el-button type="primary" size="mini">编辑</el-button>
+            <el-button type="primary" size="mini" @click="editNotice(scope.row.id)">编辑</el-button>
             <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row.id)">
               <i class="el-icon-delete"></i>删除
             </el-button>
@@ -109,12 +107,22 @@
         ></el-pagination>
       </el-card>
     </template>
+    <!-- 公共查看/编辑 -->
+    <template>
+      <el-dialog :title="tabTitle" :visible.sync="dialogVisible" width="75%" :before-close="handleClose">
+        <v-notice ref="noticeShow"></v-notice>
+      </el-dialog>
+    </template>
   </div>
 </template>
 
 <script>
+import notice from "../common/notice";
 export default {
   name: "announcementList",
+  components: {
+    vNotice: notice,
+  },
   data() {
     return {
       radio: 1, // 审核状态
@@ -130,12 +138,37 @@ export default {
       },
       totalCount: 0, // 总条数
       totalPage: 0, // 总页数
+      dialogVisible: false,
+      tabTitle: ""
     };
   },
   methods: {
+    handleClose(done) {
+      this.$confirm("确认关闭？")
+        .then((_) => {
+          done();
+        })
+        .catch((_) => {});
+    },
+    // 查看公告
+    lookNotice(id) {
+      this.tabTitle = "查看公告"
+      this.dialogVisible = true
+      setTimeout(() => {
+        this.$refs.noticeShow.getNotice(true, id)
+      },0)
+    },
+    // 编辑公告
+    editNotice(id) {
+       this.tabTitle = "编辑公告"
+      this.dialogVisible = true
+      setTimeout(() => {
+        this.$refs.noticeShow.getNotice(false, id)
+      },0)
+    },
     // 删除
-    handleDelete(index, id) {
-      this.$request.fetchDelStrategy({ strategyId: id }).then((res) => {
+    handleDelete(index, nid) {
+      this.$request.fetchDelNotice({ id: nid }).then((res) => {
         if (res.data.code === 200) {
           // 移除索引对应的那条数据
           this.tableData.splice(index, 1);
@@ -178,7 +211,7 @@ export default {
     // 状态修改
     setStatus(index, id) {
       this.$request
-        .fetchSetStrategyStatus({
+        .fetchSetNoticeStatus({
           approvalResult: parseInt(this.radio),
           id: id,
         })
@@ -239,25 +272,21 @@ export default {
     },
     // 获取列表
     getList(data) {
-      let _this = this;
-      this.$request.fetchGetNoticeList(data).then(function (res) {
+      this.$request.fetchGetNoticeList(data).then(res => {
         if (res.data.code === 200) {
-          _this.tableData = res.data.data.list;
-          _this.searchPage.page = res.data.data.currPage;
-          _this.totalCount = res.data.data.totalCount;
-          _this.totalPage = res.data.data.totalPage;
+          this.tableData = res.data.data.list;
+          this.searchPage.page = res.data.data.currPage;
+          this.totalCount = res.data.data.totalCount;
+          this.totalPage = res.data.data.totalPage;
         } else {
-          _this.$message.error("数据获取失败");
+          this.$message.error("数据获取失败");
         }
-        _this.emptyText = "暂无数据";
+        this.emptyText = "暂无数据";
       });
     },
   },
   mounted() {
     this.getList(this.searchPage);
-  },
-  watch: {
-    multipleSelection(newVal) {},
   },
   watch: {
     "searchPage.title": {

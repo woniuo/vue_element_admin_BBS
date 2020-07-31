@@ -118,14 +118,15 @@ export default {
     // 获取用信息
     getUserInfo(id) {
       this.userId = id // 存储用户id
-      let _this = this;
       this.loading = true;
-      this.$request.fetchGetUserInfoW({ id: id }).then(function(response) {
+      this.$request.fetchGetUserInfoW({ id: id }).then(response => {
         if (response.data.code == 200) {
           let {headImg, nickname, gender, birth, introduce, mail} = response.data.data
-          _this.userInfo = {headImg, nickname, gender, birth, introduce, mail}
-          _this.loading = false;
+          this.userInfo = {headImg, nickname, gender, birth, introduce, mail}
+        } else {
+          this.$message.error("数据加载失败")
         }
+        this.loading = false;
       });
     },
     closeCallback() {

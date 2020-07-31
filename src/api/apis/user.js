@@ -161,7 +161,7 @@ export default {
     return axios.post(userUrls.editNotice, data)
   },
   // 获取公告详情
-  fetchGetNoticedata() {
+  fetchGetNoticeData(data) {
     return axios.get(userUrls.getNotice, {params: data})
   },
   // 公告状态修改
@@ -171,6 +171,30 @@ export default {
   // 删除公告
   fetchDelNotice(data) {
     return axios.post(userUrls.delNotice, data)
+  },
+  // 获取新闻列表
+  fetchGetNewsList(data) {
+    return axios.get(userUrls.getNewsList, {params: data})
+  },
+  // 新增新闻
+  fetchAddNews(data) {
+    return axios.post(userUrls.addNews, data)
+  },
+  // 编辑新闻
+  fetchEditNews(data) {
+    return axios.post(userUrls.editNews, data)
+  },
+  // 获取新闻详情
+  fetchGetNewsData(data) {
+    return axios.get(userUrls.getNews, {params: data})
+  },
+  // 新闻状态修改
+  fetchSetNewsStatus(data) {
+    return axios.post(userUrls.setNewsStatus, data)
+  },
+  // 删除新闻
+  fetchDelNews(data) {
+    return axios.post(userUrls.delNews, data)
   }
 }
 

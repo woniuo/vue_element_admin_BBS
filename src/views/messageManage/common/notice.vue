@@ -1,13 +1,16 @@
 <template>
   <div>
-    <el-card>
+    <el-card class="hide-relative">
+      <div v-if="loading" class="hide-loading loading">
+        <span class="el-icon-loading"></span>玩命加载中....
+      </div>
       <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px">
         <el-form-item label="标题" prop="title">
           <el-row :span="24">
             <el-col :span="12">
-              <el-input v-model="ruleForm.title"></el-input>
+              <el-input v-model="ruleForm.title" :disabled="disabled"></el-input>
             </el-col>
-            <el-col :span="12">
+            <el-col :span="12" v-if="type == 'edit'">
               <el-form-item align="center">
                 <el-button type="primary" @click="submitForm('ruleForm')">保 存</el-button>
                 <el-button @click="resetForm('ruleForm')">重 置</el-button>
@@ -15,13 +18,14 @@
             </el-col>
           </el-row>
         </el-form-item>
-        <el-form-item label="简介" prop="synopsis">
+        <el-form-item label="简介" prop="resume">
           <el-input
             type="textarea"
             placeholder="请输入内容"
-            v-model="ruleForm.synopsis"
+            v-model="ruleForm.resume"
             maxlength="200"
             show-word-limit
+            :disabled="disabled"
           ></el-input>
         </el-form-item>
         <el-form-item label="缩略图" prop="thumbnail">
@@ -33,6 +37,7 @@
             :on-success="handleAvatarSuccess"
             :on-progress="uploadFileProcess"
             :before-upload="beforeAvatarUpload"
+            :disabled="disabled"
           >
             <img v-if="ruleForm.imageUrl" :src="ruleForm.imageUrl" class="avatar" />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -47,75 +52,29 @@
         </el-form-item>
       </el-form>
     </el-card>
-    <template>
-      <el-dialog title="选择发送对象" :visible.sync="dialogTableVisible">
-        <el-row :span="24">
-          <el-col :span="12">
-            <el-row :span="24">
-              <el-col :span="16">
-                <el-input v-model="searchPage.phone" placeholder="请输入手机号码查询"></el-input>
-              </el-col>
-              <el-col :span="8" align="center">
-                <el-button type="primary" @click="onSubmit">查询</el-button>
-              </el-col>
-            </el-row>
-          </el-col>
-          <el-col :span="12" align="right" v-if="multipleSelection.length>0">
-            <el-button type="primary" @click="getUserIdArr">确 定</el-button>
-          </el-col>
-        </el-row>
-        <el-table
-          :data="userListData"
-          @selection-change="handleSelectionChange"
-          :empty-text="emptyText"
-        >
-          <el-table-column type="selection" width="55"></el-table-column>
-          <el-table-column property="id" label="ID" width="150"></el-table-column>
-          <el-table-column property="phone" label="手机号" align="center"></el-table-column>
-          <el-table-column property="nickname" label="昵称" align="center"></el-table-column>
-        </el-table>
-        <el-pagination
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :page-size="searchPage.pageSize"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="totalCount"
-          prev-text="上一页"
-          next-text="下一页"
-        ></el-pagination>
-      </el-dialog>
-    </template>
   </div>
 </template>
 <script>
 import E from "wangeditor";
 export default {
   name: "notice",
+   props: {
+        nid: Number
+    },
   data() {
     return {
       editor: null, // 保存富文本实例化对象
       progressFlag: false, // 进度条是否显示
       progressPercent: 0, // 进度条
-      dialogTableVisible: false,
-      userListData: [], // 用户列表数据
-      multipleSelection: [], // 用户选中的用户
       emptyText: "加载中...",
-      // 翻页搜索
-      searchPage: {
-        gender: "",
-        page: 1,
-        pageSize: 10,
-        phone: "",
-      },
-      totalCount: 0, // 总条数
-      totalPage: 0, // 总页数
+      loading: false,
+      type: "", // 类型
+      disabled: false, // 表达禁用状态
       ruleForm: {
         title: "", // 标题
-        synopsis: "", // 简介
+        resume: "", // 简介
         imageUrl: "", // 缩略图
         content: "", // 主体内容
-        receiveObj: [], // 接收对象
-        radio: 1, // 是否选择所有人接收
       },
       rules: {
         title: [
@@ -166,7 +125,6 @@ export default {
     },
     uploadFileProcess(event, file, fileList) {
       fileList.forEach((item) => {
-        console.log(item.percentage);
         if (item.percentage === 100) {
         } else {
           this.progressFlag = true;
@@ -174,54 +132,30 @@ export default {
         }
       });
     },
-    // 获取用户列表
-    getUserList(data) {
-      this.dialogTableVisible = true;
-      this.$request.fetchGetUserList(data).then((res) => {
+    // 获取公共详情 type:1 查看, type:2 编辑
+    getNotice(isFalg, nid) {
+      this.loading = true
+      this.$request.fetchGetNoticeData({id: nid}).then((res) => {
         if (res.data.code === 200) {
-          this.userListData = res.data.data.list;
-          this.searchPage.page = res.data.data.currPage;
-          this.totalCount = res.data.data.totalCount;
-          this.totalPage = res.data.data.totalPage;
+          let { title, resume, content } = res.data.data
+          this.ruleForm = { title, resume, content }
+          // 初始化富文本内容
+          this.editor.txt.html(content)
+          // 判断如果是查看则禁用富文本
+          if (isFalg) {
+            this.editor.$textElem.attr('contenteditable', false)
+            this.disabled = true
+          } else {
+            this.editor.$textElem.attr('contenteditable', true)
+            this.disabled = false
+          }
         } else {
           this.$message.error("数据加载失败");
         }
         this.emptyText = "暂无数据";
+        this.loading = false
       });
-    },
-    handleSelectionChange(val) {
-      this.multipleSelection = val;
-    },
-    handleSizeChange(val) {
-      this.searchPage.pageSize = val;
-      this.getUserList(this.searchPage);
-    },
-    handleCurrentChange(val) {
-      this.searchPage.page = val;
-      this.getUserList(this.searchPage);
-    },
-    // 将用户id提取出来
-    getUserIdArr() {
-      let userArr = [];
-      this.multipleSelection.forEach((item) => {
-        userArr.push(item.id);
-      });
-      console.log(userArr);
-    },
-    // 用户查询
-    onSubmit() {
-      this.getUserList(this.searchPage);
-    },
-  },
-  watch: {
-    "searchPage.phone": {
-      handler(newVal) {
-        if (newVal.length === 0) {
-          this.searchPage.page = 1;
-          this.getUserList(this.searchPage);
-        }
-      },
-    },
+    }
   },
   mounted() {
     let id = this.$route.query.articleId;
@@ -232,11 +166,11 @@ export default {
     //自定义文件名
     editor.customConfig.uploadFileName = "file";
     editor.customConfig.onchange = (html) => {
-      this.ruleForm.article = html;
+      this.ruleForm.content = html;
     };
     editor.create();
-    this.editor.$textContainerElem.css("height", "500px !important"); //设置高度yo
-  },
+    this.editor.$textContainerElem.css("height", "500px !important"); //设置高度
+  }
 };
 </script>
 <style lang="scss" scoped>
@@ -278,5 +212,8 @@ export default {
 }
 .progress-box {
   width: 200px;
+}
+.loading > span {
+  font-size: 28px;
 }
 </style>

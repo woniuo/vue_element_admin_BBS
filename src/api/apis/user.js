@@ -195,6 +195,64 @@ export default {
   // 删除新闻
   fetchDelNews(data) {
     return axios.post(userUrls.delNews, data)
-  }
+  },
+  // 获取游戏列表
+  fetchGetGameList(data) {
+    return axios.get(userUrls.getGameList, {params: data})
+  },
+  // 增加游戏
+  fetchAddGame(data) {
+    return axios.get(userUrls.addGame, data)
+  },
+  // 修改游戏状态
+  fetchSetGameStatus(data) {
+    return axios.post(userUrls.setGameStatus, data)
+  },
+  // 编辑游戏
+  fetchEditGame(data) {
+    return axios.post(userUrls.editGame, {params: data})
+  },
+  // 删除游戏
+  fetchDelGame(data) {
+    return axios.post(userUrls.delGame, {params: data})
+  },
+  
+  // 获取头衔列表
+  fetchGetGardTitleList(data) {
+    return axios.get(userUrls.getGardTitleList, {params: data})
+  },
+  // 查看头衔
+  fetchGetGardTitle(data) {
+    return axios.get(userUrls.getGardTitle, {params: data})
+  },
+  // 增加头衔
+  fetchAddGardTitle(data) {
+    return axios.post(userUrls.addGardTitle, data)
+  },
+  // 修改头衔
+  fetchSetGardTitle(data) {
+    return axios.post(userUrls.setGardTitle, data)
+  },
+  // 删除头衔
+  fetchDelGardTitle(data) {
+    return axios.post(userUrls.delGardTitle, data)
+  },
+
+  // 获取反馈列表
+  fetchGetFeedBackList(data) {
+    return axios.get(userUrls.getFeedBackList, {params: data})
+  },
+  // 查看反馈
+  fetchGetFeedBack(data) {
+    return axios.get(userUrls.getFeedBack, {params: data})
+  },
+  // 修改反馈状态
+  fetchSetFeedBack(data) {
+    return axios.post(userUrls.setFeedBackStatus, data)
+  },
+  // 删除反馈
+  fetchDelFeedBack(data) {
+    return axios.post(userUrls.delFeedBack, data)
+  },
 }
 

@@ -14,8 +14,6 @@
             </el-form>
           </el-col>
           <el-col :span="12" align="right" v-if="multipleSelection.length>0">
-            <el-button type="success" @click="setStatusAll(1)">批量启用</el-button>
-            <el-button type="primary" @click="setStatusAll(2)">批量禁用</el-button>
             <el-button type="danger" @click="delStatusAll">批量删除</el-button>
           </el-col>
         </el-row>
@@ -27,67 +25,24 @@
         :empty-text="emptyText"
       >
         <el-table-column type="selection" width="55"></el-table-column>
-        <el-table-column label="ID" width="60" align="center">
+        <el-table-column label="ID" width="150" align="left">
           <template slot-scope="scope">
             <span style="margin-left: 10px">{{ scope.row.id }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="标题" align="center">
+        <el-table-column label="标题" align="left">
           <template slot-scope="scope">
             <div class="out-dot">{{ scope.row.title}}</div>
           </template>
         </el-table-column>
         <el-table-column label="发布人" align="center" width="200" prop="nickname"></el-table-column>
-        <el-table-column label="浏览次数" width="200" prop="browseCount" align="center" sortable></el-table-column>
+        <el-table-column label="浏览次数" width="200" prop="cmtCount" align="center" sortable></el-table-column>
         <el-table-column label="发布时间" width="250" prop="createTime" align="center" sortable></el-table-column>
-        <el-table-column
-          label="新闻状态"
-          :filters="[{ text: '启用', value: 1 }, { text: '禁用', value: 2 }]"
-          :filter-method="filterStatus"
-          filter-placement="bottom-end"
-          width="150"
-          align="center"
-        >
-          <template slot-scope="scope">
-            <el-tag type="success" v-if="scope.row.status === 1">启用</el-tag>
-            <el-tag type="danger" v-else-if="scope.row.status === 2">禁用</el-tag>
-          </template>
-        </el-table-column>
         <el-table-column label="操作" align="center" width="350">
           <template slot-scope="scope">
-           <el-button size="mini" @click="lookNews(scope.row.id)">查看新闻</el-button>
-            <el-popover
-              placement="top"
-              width="150"
-              trigger="click"
-              v-model="visibleList[scope.$index]"
-            >
-              <template>
-                <el-row>
-                  <el-col :span="24">
-                    <el-radio-group v-model="radio">
-                      <el-radio :label="1">启用</el-radio>
-                      <el-radio :label="2">禁用</el-radio>
-                    </el-radio-group>
-                  </el-col>
-                </el-row>
-                <el-row class="mt10" justify="center">
-                  <el-col :span="12">
-                    <el-button size="mini" @click="cancelDelete(scope.$index)">取消</el-button>
-                  </el-col>
-                  <el-col :span="12">
-                    <el-button
-                      size="mini"
-                      type="primary"
-                      @click="setStatus(scope.$index, scope.row.id)"
-                    >确定</el-button>
-                  </el-col>
-                </el-row>
-              </template>
-              <el-button size="mini" slot="reference">状态修改</el-button>
-            </el-popover>
+           <el-button size="mini" @click="lookNews(scope.row.id)">查看</el-button>
             <el-button type="primary" size="mini" @click="editNews(scope.row.id)">编辑</el-button>
-            <el-button size="mini" type="danger" @click="handleNews(scope.$index, scope.row.id)">
+            <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row.id)">
               <i class="el-icon-delete"></i>删除
             </el-button>
           </template>
@@ -110,7 +65,7 @@
     <!-- 公共查看/编辑 -->
     <template>
       <el-dialog :title="tabTitle" :visible.sync="dialogVisible" width="75%" :before-close="handleClose">
-        <v-news ref="newsShow"></v-news>
+        <v-news ref="newsShow" @colseCallBack="closeCallBack"></v-news>
       </el-dialog>
     </template>
   </div>
@@ -150,6 +105,13 @@ export default {
         })
         .catch((_) => {});
     },
+    // 保存成功的回调
+    closeCallBack() {
+      // 关闭弹出框
+      this.dialogVisible = false
+      // 刷新数据
+      this.getList(this.searchPage)
+    },
     // 查看新闻
     lookNews(id) {
       this.tabTitle = "查看新闻"
@@ -183,10 +145,6 @@ export default {
         }
       });
     },
-    // 状态过滤
-    filterStatus(value, row) {
-      return row.status === value;
-    },
     // 全选操作
     handleSelectionChange(val) {
       this.multipleSelection = val;
@@ -203,44 +161,6 @@ export default {
     // 新闻查询
     onSubmit() {
       this.getList(this.searchPage);
-    },
-    // 状态修改
-    setStatus(index, id) {
-      this.$request
-        .fetchSetNewsStatus({
-          approvalResult: parseInt(this.radio),
-          id: id,
-        })
-        .then((res) => {
-          if (res.data.code === 200) {
-            this.$set(this.tableData[index], "status", this.radio + 1);
-            this.$set(this.visibleList, index, false); // 隐藏
-            this.radio = 1; // 恢复初始值
-            this.$message.success("修改成功");
-          } else {
-            this.$message.error(res.data.msg);
-          }
-        });
-    },
-    // 批量修改状态
-    setStatusAll() {
-      this.$confirm("您勾选的确定全部审核通过吗?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
-      })
-        .then(() => {
-          this.$message({
-            type: "success",
-            message: "批量审核成功!",
-          });
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消操作",
-          });
-        });
     },
     delStatusAll() {
       this.$confirm("您勾选的确定全部删除吗?", "提示", {
@@ -283,9 +203,6 @@ export default {
   },
   mounted() {
     this.getList(this.searchPage);
-  },
-  watch: {
-    multipleSelection(newVal) {},
   },
   watch: {
     "searchPage.title": {

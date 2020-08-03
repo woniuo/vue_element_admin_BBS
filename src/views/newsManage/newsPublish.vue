@@ -8,30 +8,18 @@
               <el-input v-model="ruleForm.title"></el-input>
             </el-col>
             <el-col :span="12">
-              <el-row :span="24">
-                <el-col :span="12">
-                  <el-form-item  label="状态" prop="radio">
-                    <el-switch
-                      v-model="ruleForm.radio"
-                      active-color="#13ce66"
-                    ></el-switch>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="12">
-                  <el-form-item align="center">
-                    <el-button type="primary" @click="submitForm('ruleForm')">发 布</el-button>
-                    <el-button @click="resetForm('ruleForm')">重 置</el-button>
-                  </el-form-item>
-                </el-col>
-              </el-row>
+              <el-form-item align="center">
+                <el-button type="primary" @click="submitForm('ruleForm')">发 布</el-button>
+                <el-button @click="resetForm('ruleForm')">重 置</el-button>
+              </el-form-item>
             </el-col>
           </el-row>
         </el-form-item>
-        <el-form-item label="简介" prop="synopsis">
+        <el-form-item label="简介" prop="remark">
           <el-input
             type="textarea"
             placeholder="请输入内容"
-            v-model="ruleForm.synopsis"
+            v-model="ruleForm.remark"
             maxlength="200"
             show-word-limit
           ></el-input>
@@ -46,7 +34,7 @@
             :on-progress="uploadFileProcess"
             :before-upload="beforeAvatarUpload"
           >
-            <img v-if="ruleForm.imageUrl" :src="ruleForm.imageUrl" class="avatar" />
+            <img v-if="ruleForm.cover" :src="ruleForm.cover" class="avatar" />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
           <span class="up-desc">说明: 上传图片大小不能超过20M</span>
@@ -73,17 +61,23 @@ export default {
       emptyText: "加载中...",
       ruleForm: {
         title: "", // 标题
-        synopsis: "", // 简介
-        imageUrl: "", // 缩略图
+        remark: "", // 简介
+        cover: "", // 缩略图
         content: "", // 主体内容
-        radio: true, // 新闻状态- 默认开启
+        id: "" // 新闻id - 新增为空
       },
       rules: {
         title: [
           { required: true, message: "请输入发布标题", trigger: "blur" },
-          { max: 20, message: "标题长度不能超过20个字符串", trigger: "blur" },
+          { max: 30, message: "标题长度不能超过30个字符串", trigger: "blur" },
         ],
-        radio: [{ required: true, message: "" }],
+         remark: [
+          { required: true, message: "请输入新闻摘要", trigger: "blur" },
+          { max: 200, message: "摘要长度不能超过200个字符串", trigger: "blur" },
+        ],
+        content: [
+          { required: true, message: "请输入新闻内容", trigger: "blur" }
+        ],
       },
     };
   },
@@ -91,7 +85,15 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          alert("submit!");
+          this.$request.fetchAddNews(this.ruleForm).then( res => {
+            if(res.data.code === 200) {
+              // 清除表单
+              this.resetForm(formName)
+              this.$message.success("发布成功")
+            } else {
+              this.$message.error("发布失败")
+            }
+          })
         } else {
           console.log("error submit!!");
           return false;
@@ -100,10 +102,11 @@ export default {
     },
     resetForm(formName) {
       this.$refs[formName].resetFields();
+      this.ruleForm.cover = ""
       this.editor.txt.clear();
     },
     handleAvatarSuccess(res, file) {
-      this.ruleForm.imageUrl = res.msg;
+      this.ruleForm.cover = res.msg;
       this.progressPercent = 100; // 防止图片上传成后进度条反应不过来
       setTimeout(() => {
         this.progressFlag = false;
@@ -134,14 +137,14 @@ export default {
           this.progressPercent = Math.abs(item.percentage.toFixed(0));
         }
       });
-    }
+    },
   },
   mounted() {
     let id = this.$route.query.articleId;
     var editor = new E(this.$refs.editor);
     this.editor = editor;
     // 配置服务器端地址
-    editor.customConfig.uploadImgServer = this.apiUrl + "/upload/uploadFile";
+    editor.customConfig.uploadImgServer = this.apiUrl + "/upload/editorUpload";
     //自定义文件名
     editor.customConfig.uploadFileName = "file";
     editor.customConfig.onchange = (html) => {

@@ -99,15 +99,46 @@ export default {
    delNotice: "/notice/delete",
 
    // 获取新闻列表
-   getNewsList: "/notice/list",
+   getNewsList: "/news/list",
    // 新增新闻
    addNews: "/news/insert",
    // 编辑新闻
-   editNews: "/notice/update",
+   editNews: "/news/insert",
    // 获取新闻详情
    getNews: "/news/detail",
    // 新闻状态修改
    setNewsStatus: "",
    // 删除新闻
    delNews: "/news/delete",
+
+   // 获取游戏列表
+   getGameList: "/game/list",
+   // 新增游戏
+   addGame: "/game/insert",
+   // 修改游戏状态
+   setGameStatus: "",
+   // 编辑游戏
+   editGame: "",
+   // 删除游戏
+   delGame: "/game/delete",
+
+   // 获取头衔列表
+   getGardTitleList: "/rank/getRankList",
+   // 查看头衔
+   getGardTitle: "/rank/detailRank",
+   // 增加头衔
+   addGardTitle: "",
+   // 修改头衔
+   setGardTitle: "/rank/updateRank",
+   // 删除头衔
+   delGardTitle: "",
+
+   // 获取反馈列表
+   getFeedBackList: "/feedback/list",
+   // 查看反馈
+   getFeedBack: "/feedback/detail",
+   // 修改反馈状态
+   setFeedBackStatus: "/feedback/approval",
+   // 删除反馈
+   delFeedBack: ""
 }

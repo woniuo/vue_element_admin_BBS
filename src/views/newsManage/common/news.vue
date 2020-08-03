@@ -10,7 +10,7 @@
             <el-col :span="12">
               <el-input v-model="ruleForm.title" :disabled="disabled"></el-input>
             </el-col>
-            <el-col :span="12" v-if="type == 'edit'">
+            <el-col :span="12" v-if="!type">
               <el-form-item align="center">
                 <el-button type="primary" @click="submitForm('ruleForm')">保 存</el-button>
                 <el-button @click="resetForm('ruleForm')">重 置</el-button>
@@ -18,11 +18,11 @@
             </el-col>
           </el-row>
         </el-form-item>
-        <el-form-item label="简介" prop="resume">
+        <el-form-item label="简介" prop="remark">
           <el-input
             type="textarea"
             placeholder="请输入内容"
-            v-model="ruleForm.resume"
+            v-model="ruleForm.remark"
             maxlength="200"
             show-word-limit
             :disabled="disabled"
@@ -39,7 +39,7 @@
             :before-upload="beforeAvatarUpload"
             :disabled="disabled"
           >
-            <img v-if="ruleForm.imageUrl" :src="ruleForm.imageUrl" class="avatar" />
+            <img v-if="ruleForm.cover" :src="ruleForm.cover" class="avatar" />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
           <span class="up-desc">说明: 上传图片大小不能超过20M</span>
@@ -58,9 +58,9 @@
 import E from "wangeditor";
 export default {
   name: "news",
-   props: {
-        nid: Number
-    },
+  props: {
+    nid: Number,
+  },
   data() {
     return {
       editor: null, // 保存富文本实例化对象
@@ -68,18 +68,19 @@ export default {
       progressPercent: 0, // 进度条
       emptyText: "加载中...",
       loading: false,
-      type: "", // 类型
+      type: true, // 类型
       disabled: false, // 表达禁用状态
       ruleForm: {
         title: "", // 标题
-        resume: "", // 简介
-        imageUrl: "", // 缩略图
+        remark: "", // 简介
+        cover: "", // 缩略图
         content: "", // 主体内容
+        id: ""
       },
       rules: {
         title: [
           { required: true, message: "请输入发布标题", trigger: "blur" },
-          { max: 20, message: "标题长度不能超过20个字符串", trigger: "blur" },
+          { max: 30, message: "标题长度不能超过30个字符串", trigger: "blur" },
         ],
         radio: [{ required: true, message: "" }],
       },
@@ -89,7 +90,17 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          alert("submit!");
+          this.$request.fetchAddNews(this.ruleForm).then((res) => {
+            if (res.data.code === 200) {
+              // 清除表单
+              this.resetForm(formName);
+              this.$message.success("修改成功");
+              // 关闭弹框
+              this.$emit("colseCallBack")
+            } else {
+              this.$message.error("修改失败");
+            }
+          });
         } else {
           console.log("error submit!!");
           return false;
@@ -98,10 +109,11 @@ export default {
     },
     resetForm(formName) {
       this.$refs[formName].resetFields();
+      this.ruleForm.cover = "";
       this.editor.txt.clear();
     },
     handleAvatarSuccess(res, file) {
-      this.ruleForm.imageUrl = res.msg;
+      this.ruleForm.cover = res.msg;
       this.progressPercent = 100; // 防止图片上传成后进度条反应不过来
       setTimeout(() => {
         this.progressFlag = false;
@@ -132,37 +144,38 @@ export default {
         }
       });
     },
-    // 获取公共详情 type:1 查看, type:2 编辑
+    // 获取公共详情
     getNews(isFalg, nid) {
-      this.loading = true
-      this.$request.fetchGetNewsData({id: nid}).then((res) => {
+      this.loading = true;
+      this.type = isFalg;
+      this.$request.fetchGetNewsData({ id: nid }).then((res) => {
         if (res.data.code === 200) {
-          let { title, resume, content } = res.data.data
-          this.ruleForm = { title, resume, content }
+          let { title, remark, cover, id, content } = res.data.data;
+          this.ruleForm = { title, remark, cover, id, content };
           // 初始化富文本内容
-          this.editor.txt.html(content)
+          this.editor.txt.html(content);
           // 判断如果是查看则禁用富文本
           if (isFalg) {
-            this.editor.$textElem.attr('contenteditable', false)
-            this.disabled = true
+            this.editor.$textElem.attr("contenteditable", false);
+            this.disabled = true;
           } else {
-            this.editor.$textElem.attr('contenteditable', true)
-            this.disabled = false
+            this.editor.$textElem.attr("contenteditable", true);
+            this.disabled = false;
           }
         } else {
           this.$message.error("数据加载失败");
         }
         this.emptyText = "暂无数据";
-        this.loading = false
+        this.loading = false;
       });
-    }
+    },
   },
   mounted() {
     let id = this.$route.query.articleId;
     var editor = new E(this.$refs.editor);
     this.editor = editor;
     // 配置服务器端地址
-    editor.customConfig.uploadImgServer = this.apiUrl + "/upload/uploadFile";
+    editor.customConfig.uploadImgServer = this.apiUrl + "/upload/editorUpload";
     //自定义文件名
     editor.customConfig.uploadFileName = "file";
     editor.customConfig.onchange = (html) => {
@@ -170,7 +183,7 @@ export default {
     };
     editor.create();
     this.editor.$textContainerElem.css("height", "500px !important"); //设置高度
-  }
+  },
 };
 </script>
 <style lang="scss" scoped>

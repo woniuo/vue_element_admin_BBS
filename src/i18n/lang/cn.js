@@ -45,7 +45,7 @@ const cn = {
     giftBagAdd: "新增礼包",
     giftBagList: "礼包列表",
     gardManage: "等级管理", // 等级相关
-    gardCenter: "等级中心",
+    integralManage: "积分任务管理",
     gardTitle: "头衔列表",
     feedbackManage: "反馈管理", // 反馈相关
     feedbackList: "反馈列表",

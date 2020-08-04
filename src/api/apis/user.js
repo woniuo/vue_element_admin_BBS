@@ -210,13 +210,39 @@ export default {
   },
   // 编辑游戏
   fetchEditGame(data) {
-    return axios.post(userUrls.editGame, {params: data})
+    return axios.post(userUrls.editGame, data)
   },
   // 删除游戏
   fetchDelGame(data) {
-    return axios.post(userUrls.delGame, {params: data})
+    return axios.post(userUrls.delGame, data)
   },
   
+  // 获取游戏类型列表
+  fetchGetGameTypeList(data) {
+    return axios.get(userUrls.getGameTypeList, {params: data})
+  },
+  // 增加游戏类型
+  fetchAddGameType(data) {
+    return axios.post(userUrls.addGameType, data)
+  },
+  // 修改游戏类型
+  fetchSetGameType(data) {
+    return axios.post(userUrls.setGameType, data)
+  },
+  // 删除游戏类型
+  fetchDelGameType(data) {
+    return axios.post(userUrls.delGameType, data)
+  },
+
+  // 获取积分配置
+  fetchGetIntegrayList(data) {
+    return axios.get(userUrls.getIntegrayList, data)
+  },
+  // 修改积分配置
+  fetchSetIntegray(data) {
+    return axios.post(userUrls.setIntegary, data)
+  },
+
   // 获取头衔列表
   fetchGetGardTitleList(data) {
     return axios.get(userUrls.getGardTitleList, {params: data})

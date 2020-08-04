@@ -31,7 +31,7 @@
         </el-table-column>
         <el-table-column label="头衔图片" align="center">
           <template slot-scope="scope">
-            <el-image v-if="scope.row.imgUrl.length>0" :src="scope.row.imgUrl"></el-image>
+            <img style="width:155px;height:auto" :src="scope.row.imgUrl" :alt="scope.row.name">
           </template>
         </el-table-column>
         <el-table-column label="等级区间" prop="levelRange" align="center"></el-table-column>
@@ -110,7 +110,7 @@
           <el-row :span="24">
             <el-col :span="24" align="right">
               <el-form-item align="center">
-                <el-button v-if="isNewAdd" type="primary" @click="submit('ruleForm')">发 布</el-button>
+                <el-button v-if="isNewAdd" type="primary" @click="submit('ruleForm')">增 加</el-button>
                 <el-button v-else type="primary" @click="editGardTitle('ruleForm')">保存</el-button>
                 <el-button @click="resetForm('ruleForm')">重 置</el-button>
               </el-form-item>
@@ -148,6 +148,7 @@ export default {
         imgUrl: "", // 头衔图片
         levelRange: "", // 等级区间
         description: "", // 头衔描述
+        id: ""
       },
       isNewAdd: true, // 是否新增
       rules: {
@@ -160,6 +161,7 @@ export default {
         ],
         levelRange: [
           { required: true, message: "请输入等级区间", trigger: "blur" },
+          {pattern:/^[0-9]~[1,9]+$/,message:'只能输入(正整数~正整数)', trigger: "blur"},
           {
             max: 20,
             message: "等级区间长度不能超过20个字符串",
@@ -174,15 +176,15 @@ export default {
     submit(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.$request.fetchAddNews(this.submitForm).then((res) => {
+          this.$request.fetchAddGardTitle(this.submitForm).then((res) => {
             if (res.data.code === 200) {
               // 清除表单
               this.resetForm(formName);
-              this.$message.success("发布成功");
+              this.$message.success("增加成功");
               this.getList(this.searchPage)
               this.dialogVisible = false
             } else {
-              this.$message.error("发布失败");
+              this.$message.error("增加失败");
             }
           });
         } else {
@@ -227,6 +229,7 @@ export default {
       if (gardTitleData && gardTitleData.length > 0) {
         this.submitForm = JSON.parse(gardTitleData);
       }
+      this.submitForm.id = ""
       this.isNewAdd = true;
       this.tabTitle = "新增头衔";
       this.dialogVisible = true;
@@ -269,7 +272,7 @@ export default {
     },
     // 删除
     handleDelete(index, id) {
-      this.$request.fetchDelNews({ id: id }).then((res) => {
+      this.$request.fetchDelGardTitle({ id: id }).then((res) => {
         if (res.data.code === 200) {
           // 移除索引对应的那条数据
           this.tableData.splice(index, 1);

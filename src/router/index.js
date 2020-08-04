@@ -367,11 +367,11 @@ let addRouter = [
     children: [
       {
         r_id: 1033,
-        r_name: roleName.gardCenter, // 等级中心
-        path: "/gardCenter",
+        r_name: roleName.integralManage, // 等级管理
+        path: "/integralManage",
         iconCls: "fa iconfont icon-ziyuanzhongxin",
-        name: "gardCenter",
-        component: () => import("@/views/gardManage/gardCenter"),
+        name: "integralManage",
+        component: () => import("@/views/gardManage/integralManage"),
         children: []
       },
       {

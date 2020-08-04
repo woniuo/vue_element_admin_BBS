@@ -43,11 +43,11 @@
                       <el-col>问题图片:</el-col>
                       <el-col class="cmbg">
                         <el-image
-                          v-for="imgUrl in props.row.imgUrl"
+                          v-for="imgUrl in props.row.imgList"
                           :key="imgUrl"
                           class="commentImg"
                           :src="imgUrl"
-                          :preview-src-list="props.row.imgUrl"
+                          :preview-src-list="props.row.imgList"
                         ></el-image>
                       </el-col>
                     </el-row>
@@ -69,43 +69,47 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="类别"
+          label="游戏类型"
           align="center"
           width="150"
           prop="gameTypeName"
-          :filters="[{ text: '男', value: 1 }, { text: '女', value: 2 }, { text: '保密', value: 3 }]"
-          :filter-method="filterTag"
+          :filters="gameTypeArr"
+          :filter-method="filterGameType"
           filter-placement="bottom-end"
         >
           <template slot-scope="scope">
-            <el-tag v-if="scope.row.gender === 1" disable-transitions>男</el-tag>
-            <el-tag v-else-if="scope.row.gender === 2" type="success" disable-transitions>女</el-tag>
-            <el-tag v-else type="warning" disable-transitions>保密</el-tag>
+            <el-tag disable-transitions>{{scope.row.gameTypeName}}</el-tag>
           </template>
         </el-table-column>
         <el-table-column
           prop="gameName"
           label="所属游戏"
-          :filters="[{ text: '男', value: 1 }, { text: '女', value: 2 }, { text: '保密', value: 3 }]"
-          :filter-method="filterTag"
+          :filters="gameList"
+          :filter-method="filterGame"
           filter-placement="bottom-end"
           width="150"
           align="center"
         >
           <template slot-scope="scope">
-            <el-tag v-if="scope.row.gender === 1" disable-transitions>男</el-tag>
-            <el-tag v-else-if="scope.row.gender === 2" type="success" disable-transitions>女</el-tag>
-            <el-tag v-else type="warning" disable-transitions>保密</el-tag>
+            <el-tag type="warning" disable-transitions>{{scope.row.gameName}}</el-tag>
           </template>
         </el-table-column>
         <el-table-column label="反馈人" width="200" prop="nickname" align="center"></el-table-column>
         <el-table-column label="联系方式" width="250" align="center">
           <template slot-scope="scope">
-            <el-tag v-if="scope.row.contactType === 1">QQ</el-tag>
+            <i v-if="scope.row.contactType === 1" class="fa fa-qq"></i>
+            <i v-if="scope.row.contactType === 2" class="fa fa-phone-square"></i>
+            {{scope.row.contactWay}}
+          </template>
+        </el-table-column>
+        <el-table-column label="状态" width="80">
+          <template slot-scope="scope">
+            <el-tag v-if="scope.row.status === 2" type="success">已阅</el-tag>
+            <el-tag v-else type="info">未阅</el-tag>
           </template>
         </el-table-column>
         <el-table-column label="反馈时间" width="150" prop="createTime" align="center" sortable></el-table-column>
-        <el-table-column label="操作" align="center" width="350">
+        <el-table-column label="操作" align="center" width="250">
           <template slot-scope="scope">
             <el-button size="mini" type="primary" @click="setStatus(scope.$index, scope.row.id)">
               <i class="el-icon-view"></i>查阅
@@ -150,44 +154,22 @@ export default {
       },
       totalCount: 0, // 总条数
       totalPage: 0, // 总页数
-      dialogVisible: false,
-      tabTitle: "",
+      gameTypeArr: [], // 游戏类型
+      gameList: [], // 所属游戏
     };
   },
   methods: {
-    handleClose(done) {
-      this.$confirm("确认关闭？")
-        .then((_) => {
-          done();
-        })
-        .catch((_) => {});
+    // 游戏类型过滤
+    filterGameType(value, row) {
+      return row.gameTypeName === value;
     },
-    // 保存成功的回调
-    closeCallBack() {
-      // 关闭弹出框
-      this.dialogVisible = false;
-      // 刷新数据
-      this.getList(this.searchPage);
-    },
-    // 查看反馈
-    lookNews(id) {
-      this.tabTitle = "查看反馈";
-      this.dialogVisible = true;
-      setTimeout(() => {
-        this.$refs.newsShow.getNews(true, id);
-      }, 0);
-    },
-    // 编辑反馈
-    editNews(id) {
-      this.tabTitle = "编辑反馈";
-      this.dialogVisible = true;
-      setTimeout(() => {
-        this.$refs.newsShow.getNews(false, id);
-      }, 0);
+    // 所属游戏过滤
+    filterGame(value, row) {
+      return row.gameName === value;
     },
     // 删除
     handleDelete(index, id) {
-      this.$request.fetchDelNews({ id: id }).then((res) => {
+      this.$request.fetchDelFeedBack({ id: [id] }).then((res) => {
         if (res.data.code === 200) {
           // 移除索引对应的那条数据
           this.tableData.splice(index, 1);
@@ -219,6 +201,7 @@ export default {
     onSubmit() {
       this.getList(this.searchPage);
     },
+    // 批量删除
     delStatusAll() {
       this.$confirm("您勾选的确定全部删除吗?", "提示", {
         confirmButtonText: "确定",
@@ -226,9 +209,25 @@ export default {
         type: "warning",
       })
         .then(() => {
-          this.$message({
-            type: "success",
-            message: "批量删除成功!",
+          // 提取id
+          let dataArr = [];
+          this.multipleSelection.forEach((item, index) => {
+            dataArr.push(item.id);
+          });
+          this.$request.fetchDelFeedBack({ id: dataArr }).then((res) => {
+            if (res.data.code === 200) {
+              // 清空当前数据
+              this.tableData = [];
+              // 防止当前数据删除完显示空的情况，当删除完最后一个时请求上一页数据
+              if (this.tableData.length === 0) {
+                this.searchPage.page--;
+                this.getList(this.searchPage);
+              }
+              this.$message({
+                type: "success",
+                message: "批量删除成功!",
+              });
+            }
           });
         })
         .catch(() => {
@@ -248,6 +247,7 @@ export default {
         .then((res) => {
           if (res.data.code === 200) {
             this.$set(this.tableData[index], "status", 2);
+            this.$message.success("查阅成功");
           } else {
             this.$message.error(res.data.msg);
           }
@@ -255,15 +255,34 @@ export default {
     },
     // 修改批量阅读状态
     setStatusAll() {
+      // 提取id
+      let dataArr = [];
+      this.multipleSelection.forEach((item, index) => {
+        dataArr.push(item.id);
+      });
       this.$confirm("您勾选的确定全部审核通过吗?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       })
         .then(() => {
-          this.$message({
-            type: "success",
-            message: "批量审核成功!",
+          this.$request.fetchSetFeedBack({ids: dataArr,result: 2}).then((res) => {
+            if (res.data.code === 200) {
+              // 改变状态
+              this.tableData.forEach((item, index) => {
+                dataArr.forEach((item1, index1) => {
+                  if(item.id === item1) {
+                    this.tableData[index].status = 2
+                  }
+                })
+              })
+              this.$message({
+                type: "success",
+                message: "批量审核成功!",
+              });
+            } else {
+              this.$message.error("操作失败")
+            }
           });
         })
         .catch(() => {
@@ -292,9 +311,41 @@ export default {
         this.emptyText = "暂无数据";
       });
     },
+    // 获取游戏类型
+    getGameType(data) {
+      this.$request.fetchGetGameTypeList(data).then((res) => {
+        if (res.data.code === 200) {
+          let gameTypeArr = [];
+          res.data.data.list.forEach((item, index) => {
+            let gameTypeObj = {};
+            gameTypeObj.text = item.name;
+            gameTypeObj.value = item.name;
+            gameTypeArr.push(gameTypeObj);
+          });
+          this.gameTypeArr = gameTypeArr;
+        }
+      });
+    },
+    // 获取游戏列表
+    getGameList(data) {
+      this.$request.fetchGetGameList(data).then((res) => {
+        if (res.data.code === 200) {
+          let gameListArr = [];
+          res.data.data.list.forEach((item, index) => {
+            let gameObj = {};
+            gameObj.text = item.name;
+            gameObj.value = item.name;
+            gameListArr.push(gameObj);
+          });
+          this.gameList = gameListArr;
+        }
+      });
+    },
   },
   mounted() {
     this.getList(this.searchPage);
+    this.getGameType({ page: 1, pageSize: 20, name: "" });
+    this.getGameList({ page: 1, pageSize: 20, gameName: "" });
   },
   watch: {
     "searchPage.title": {

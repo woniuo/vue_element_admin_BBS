@@ -13,20 +13,16 @@
               </el-form-item>
             </el-form>
           </el-col>
-          <el-col :span="12" align="right" v-if="multipleSelection.length>0">
-            <el-button type="success" @click="setStatusAll(1)">批量启用</el-button>
-            <el-button type="primary" @click="setStatusAll(2)">批量禁用</el-button>
-            <el-button type="danger" @click="delStatusAll">批量删除</el-button>
+          <el-col :span="12" align="right">
+            <el-button type="primary" @click="addGame">新增游戏</el-button>
           </el-col>
         </el-row>
       </el-card>
       <el-table
         :data="tableData"
         style="width: 100%"
-        @selection-change="handleSelectionChange"
         :empty-text="emptyText"
       >
-        <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column label="ID" width="60" align="center">
           <template slot-scope="scope">
             <span style="margin-left: 10px">{{ scope.row.id }}</span>
@@ -38,22 +34,20 @@
           </template>
         </el-table-column>
         <el-table-column label="封面图" align="center">
-            
-            <template slot-scope="scope">
-                <el-image
-                    style="width: 100px; height: 100px"
-                    v-if="scope.row.cover"
-                    :src="scope.row.cover"
-                    fit="cover"
-                    ></el-image>
-            </template>
+          <template slot-scope="scope">
+            <el-image
+              style="width: 100px; height: 100px"
+              v-if="scope.row.cover"
+              :src="scope.row.cover"
+              fit="cover"
+            ></el-image>
+          </template>
         </el-table-column>
-        <el-table-column label="发布人" align="center" width="200" prop="nickname"></el-table-column>
         <el-table-column label="浏览次数" width="200" prop="browseCount" align="center" sortable></el-table-column>
         <el-table-column label="发布时间" width="250" prop="createTime" align="center" sortable></el-table-column>
         <el-table-column
           label="游戏状态"
-          :filters="[{ text: '启用', value: 1 }, { text: '禁用', value: 2 }]"
+          :filters="[{ text: '上架', value: 1 }, { text: '维护中', value: 2 }, { text: '下架', value: 3 }]"
           :filter-method="filterStatus"
           filter-placement="bottom-end"
           width="150"
@@ -98,8 +92,12 @@
               </template>
               <el-button size="mini" slot="reference">状态修改</el-button>
             </el-popover>
+            <el-button size="mini" type="primary" @click="editGame(scope.$index, scope.row.id)">
+              <i class="el-icon-edit"></i>
+              修 改
+            </el-button>
             <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row.id)">
-              <i class="el-icon-delete"></i>删除
+              <i class="el-icon-delete"></i>删 除
             </el-button>
           </template>
         </el-table-column>
@@ -117,6 +115,15 @@
           next-text="下一页"
         ></el-pagination>
       </el-card>
+    </template>
+    <!-- 游戏新增 -->
+    <template>
+      <el-dialog :title="gameTitle" :visible.sync="dialogVisible" width="60%" :before-close="handleClose">
+        <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px">
+        <el-form-item label="游戏名" prop="name">
+        </el-form-item>
+        </el-form>
+      </el-dialog>
     </template>
   </div>
 </template>
@@ -140,7 +147,12 @@ export default {
       totalCount: 0, // 总条数
       totalPage: 0, // 总页数
       dialogVisible: false,
-      tabTitle: ""
+      gameTitle: "",
+      ruleForm: {
+        name: "", // 游戏名称
+        type: "", // 游戏类别
+
+      }
     };
   },
   methods: {
@@ -168,6 +180,16 @@ export default {
         }
       });
     },
+    // 新增游戏
+    addGame() {
+      this.gameTitle = "新增游戏"
+      this.dialogVisible = true
+    },
+    // 修改游戏
+    editGame() {
+      this.gameTitle = "修改游戏"
+      this.dialogVisible = true
+    },
     // 游戏过滤
     filterGames(value, row) {
       return row.gameName === value;
@@ -175,10 +197,6 @@ export default {
     // 状态过滤
     filterStatus(value, row) {
       return row.status === value;
-    },
-    // 全选操作
-    handleSelectionChange(val) {
-      this.multipleSelection = val;
     },
     // 分页
     handleSizeChange(val) {
@@ -211,45 +229,6 @@ export default {
           }
         });
     },
-    // 批量修改状态
-    setStatusAll() {
-      this.$confirm("您勾选的确定全部审核通过吗?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
-      })
-        .then(() => {
-          this.$message({
-            type: "success",
-            message: "批量审核成功!",
-          });
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消操作",
-          });
-        });
-    },
-    delStatusAll() {
-      this.$confirm("您勾选的确定全部删除吗?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
-      })
-        .then(() => {
-          this.$message({
-            type: "success",
-            message: "批量删除成功!",
-          });
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消操作",
-          });
-        });
-    },
     // 取消
     cancelDelete(index) {
       this.$set(this.visibleList, index, false);
@@ -257,7 +236,7 @@ export default {
     },
     // 获取列表
     getList(data) {
-      this.$request.fetchGetGameList(data).then(res => {
+      this.$request.fetchGetGameList(data).then((res) => {
         if (res.data.code === 200) {
           this.tableData = res.data.data.list;
           this.searchPage.page = res.data.data.currPage;

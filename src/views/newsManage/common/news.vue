@@ -144,7 +144,7 @@ export default {
         }
       });
     },
-    // 获取公共详情
+    // 获取新闻详情
     getNews(isFalg, nid) {
       this.loading = true;
       this.type = isFalg;

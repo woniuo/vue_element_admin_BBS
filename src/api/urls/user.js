@@ -49,7 +49,7 @@ export default {
   getColumnList: "/column/getColumnList",
 
   // 获取动态列表
-  getDynamicList: "/photo/getPhotoList",
+  getDynamicList: "/photo/list",
   // 动态审核
   setDynamicStatus: "/photo/approvalStory",
   // 动态删除
@@ -122,16 +122,30 @@ export default {
    // 删除游戏
    delGame: "/game/delete",
 
+   // 获取游戏类型列表
+   getGameTypeList: "/gameType/list",
+   // 增加游戏类型
+   addGameType: "/gameType/update",
+   // 修改游戏类型
+   setGameType: "/gameType/update",
+   // 删除游戏类型
+   delGameType: "/gameType/delete",
+
+   // 获取积分配置
+   getIntegrayList: "/dailyTask/list",
+   // 修改积分配置
+   setIntegary: "/dailyTask/update",
+
    // 获取头衔列表
    getGardTitleList: "/rank/getRankList",
    // 查看头衔
    getGardTitle: "/rank/detailRank",
    // 增加头衔
-   addGardTitle: "",
+   addGardTitle: "/rank/updateRank",
    // 修改头衔
    setGardTitle: "/rank/updateRank",
    // 删除头衔
-   delGardTitle: "",
+   delGardTitle: "/rank/delete",
 
    // 获取反馈列表
    getFeedBackList: "/feedback/list",
@@ -140,5 +154,5 @@ export default {
    // 修改反馈状态
    setFeedBackStatus: "/feedback/approval",
    // 删除反馈
-   delFeedBack: ""
+   delFeedBack: "/feedback/delete"
 }

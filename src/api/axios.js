@@ -17,7 +17,6 @@ axios.interceptors.request.use(config => {
   NProgress.start()
   config.headers["Content-Type"] = "application/json;charset=UTF-8"
   // config.withCredentials = true // 允许携带token ,这个是解决跨域产生的相关问题
-  console.log("cookie:" + Cookies.get("access_token"))
   if (Cookies.get("access_token")) {
     config.headers.Authorization = "Bearer" + Cookies.get("access_token")
   }

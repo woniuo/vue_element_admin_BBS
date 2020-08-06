@@ -431,6 +431,16 @@ let addRouter = [
         children: []
       },
       {
+        r_id: 10391,
+        r_name: roleName.activeEdit, // 活动公告编辑
+        path: "/activeEdit",
+        iconCls: "fa iconfont icon-fabu",
+        name: "activeEdit",
+        component: () => import("@/views/activeManage/activeEdit"),
+        hidden: true,
+        children: []
+      },
+      {
         r_id: 1040,
         r_name: roleName.activeList, // 活动公告列表
         path: "/activeList",
@@ -456,6 +466,16 @@ let addRouter = [
         iconCls: "fa iconfont icon-fabu",
         name: "adPublish",
         component: () => import("@/views/adManage/adPublish"),
+        children: []
+      },
+      {
+        r_id: 10411,
+        r_name: roleName.adEdit, // 广告编辑
+        path: "/adEdit",
+        iconCls: "fa iconfont icon-fabu",
+        name: "adEdit",
+        component: () => import("@/views/adManage/adEdit"),
+        hidden: true,
         children: []
       },
       {

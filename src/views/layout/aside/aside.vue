@@ -48,15 +48,23 @@ export default {
   watch: {
     // 监听浏览器直接输入路由，将此路由添加到tabnavBox
     "$route.path": function (val) {
+      // 判断是否传有参数
+      if (this.$route.query && this.$route.query.id) {
+        val = val + "?id=" + this.$route.query.id
+      }
       this.selectmenu(val)
     }
   },
   methods: {
-    selectmenu (key) {
+    selectmenu (key, id) {
       let router = this.$store.getters.routers
+      let that = this
       let name = ""
       let navTitle = function (path, routerARR) {
         for (let i = 0; i < routerARR.length; i++) {
+            if(path.indexOf("?")!=-1){ // 判断是否存在参数
+              path = path.replace(/(\?|#)[^'"]*/, ''); // 去除参数
+            }
           if (routerARR[i].children.length > 0 || routerARR[i].path === path) {
             if (routerARR[i].path === path && (routerARR[i].children.length < 1 || routerARR[i].children[0].type === "button")) {
               name = routerARR[i].name

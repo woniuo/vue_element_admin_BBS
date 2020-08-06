@@ -52,9 +52,11 @@ const cn = {
     feedbackType: "反馈类型",
     activeManage: "活动公告管理", // 活动公告相关
     activeAdd: "活动公告发布",
+    activeEdit: "活动公告编辑",
     activeList: "活动公告列表",
     adManage: "广告管理", // 广告相关
     adPublish: "广告发布",
+    adEdit: "广告编辑",
     adList: "广告列表",
     systemManage: "系统管理", // 系统相关
     roleManage: "角色管理",

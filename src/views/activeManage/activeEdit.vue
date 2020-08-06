@@ -1,6 +1,6 @@
 <template>
   <div>
-    <active-detail :is-edit="false" />
+    <active-detail :is-edit="true" />
   </div>
 </template>
 <script>
@@ -11,10 +11,13 @@ export default {
     activeDetail,
   },
   data() {
-    return {};
+    return {
+        id: undefined
+    };
   },
   methods: {},
-  mounted() {},
+  mounted() {
+  },
 };
 </script>
 <style lang="scss" scoped>

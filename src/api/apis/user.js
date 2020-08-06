@@ -280,5 +280,30 @@ export default {
   fetchDelFeedBack(data) {
     return axios.post(userUrls.delFeedBack, data)
   },
+
+  // 获取活动公告列表
+  fetchGetActiveList(data) {
+    return axios.get(userUrls.getActiveList, {params: data})
+  },
+  // 查看活动公告
+  fetchGetActive(data) {
+    return axios.get(userUrls.getActive, {params: data})
+  },
+  // 增加活动公告
+  fetchAddActive(data) {
+    return axios.post(userUrls.addActive, data)
+  },
+  // 修改活动公告
+  fetchSetActive(data) {
+    return axios.post(userUrls.setActive, data)
+  },
+  // 修改活动公告状态
+  fetchSetActiveStatus(data) {
+    return axios.post(userUrls.setActiveStatus, data)
+  },
+  // 删除活动公告
+  fetchDelActive(data) {
+    return axios.post(userUrls.delActive, data)
+  }
 }
 

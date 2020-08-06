@@ -3,8 +3,11 @@
     <div class="tabnavBox">
       <transition-group name="list" tag="ul">
         <li v-for="(item, index) in $store.getters.tabnavBox" @contextmenu.prevent="openMenu(item,$event,index)"
-            :key="item.title" class="tabnav" :class="{ active: $route.path === item.path }">
-          <router-link :to="item.path">{{ $t(`routeName.${item.title}`) }}</router-link>
+            :key="item.title+item.path" class="tabnav" :class="{ active: ($route.path + idpath) === item.path }">
+          <router-link :to="item.path">
+            {{ $t(`routeName.${item.title}`) }}
+            <span v-if="$route.query.id && ($route.path + idpath) === item.path">--{{$route.query.id}} </span>
+            </router-link>
           <i @click="removeTab(item)" class="el-icon-error" v-if="index !== 0"/>
         </li>
       </transition-group>
@@ -24,7 +27,8 @@ export default {
     return {
       rightMenuShow: false,
       left: 0,
-      top: 0
+      top: 0,
+      idpath: '' // 当前路由参数
     }
   },
   methods: {
@@ -58,6 +62,16 @@ export default {
           this.rightMenuShow = false
         })
       }
+    },
+    $route: {
+      handler (newVal) {
+        if (newVal.query.id) {
+          this.idpath = '?id=' + newVal.query.id
+        } else {
+          this.idpath = ""
+        }
+      },
+      immediate: true
     }
   }
 }

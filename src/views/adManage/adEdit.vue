@@ -1,12 +1,12 @@
 <template>
   <div>
-    <ad-detail></ad-detail>
+    <ad-detail :is-edit="true"></ad-detail>
   </div>
 </template>
 <script>
 import adDetail from "./common/adDetail"
 export default {
-  name: "adPublish",
+  name: "adEdit",
   components: {
       adDetail
   },

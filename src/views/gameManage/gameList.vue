@@ -18,11 +18,112 @@
           </el-col>
         </el-row>
       </el-card>
-      <el-table
-        :data="tableData"
-        style="width: 100%"
-        :empty-text="emptyText"
-      >
+      <el-table :data="tableData" style="width: 100%" :empty-text="emptyText">
+        <el-table-column type="expand">
+          <el-card>
+            <el-row class="list-box">
+              <el-col :span="2">
+                <span class="left-desc">游戏名 :</span>
+              </el-col>
+              <el-col :span="22">
+                <div>天湖十三浪</div>
+              </el-col>
+            </el-row>
+            <el-row class="list-box">
+              <el-col :span="2">
+                <span class="left-desc">简介 :</span>
+              </el-col>
+              <el-col :span="22">
+                <div>天湖十三浪天湖十三浪天湖十三浪</div>
+              </el-col>
+            </el-row>
+            <el-row class="list-box">
+              <el-col :span="2">
+                <span class="left-desc">主页背景图 :</span>
+              </el-col>
+              <el-col :span="22">
+                <div>
+                  <el-image
+                    style="width:150px;height:80px"
+                    src="https://dss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=1089874897,1268118658&fm=26&gp=0.jpg"
+                    fit="cover"
+                    :preview-src-list="['https://dss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=1089874897,1268118658&fm=26&gp=0.jpg']"
+                  ></el-image>
+                </div>
+              </el-col>
+            </el-row>
+            <el-row class="list-box">
+              <el-col :span="2">
+                <span class="left-desc">游戏截图 :</span>
+              </el-col>
+              <el-col :span="22">
+                <div>
+                  <el-image
+                    style="width:150px;height:80px"
+                    src="https://dss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=1089874897,1268118658&fm=26&gp=0.jpg"
+                    fit="cover"
+                    :preview-src-list="['https://dss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=1089874897,1268118658&fm=26&gp=0.jpg']"
+                  ></el-image>
+                </div>
+              </el-col>
+            </el-row>
+            <el-row class="list-box">
+              <el-col :span="2">
+                <span class="left-desc">版本信息 :</span>
+              </el-col>
+              <el-col :span="22">
+                  <el-row>
+                    <el-col :span="11" class="r-line android">
+                      <el-row>
+                        <el-col :span="12" class="pd10">
+                          <el-tag>版本名称:</el-tag> 安卓版本
+                        </el-col>
+                        <el-col :span="12" class="pd10">
+                          <el-tag>游戏大小:</el-tag> 150M
+                        </el-col>
+                      </el-row>
+                      <el-row>
+                        <el-col :span="12" class="pd10">
+                          <el-tag>下载地址:</el-tag> <el-link type="primary" href="http:www.baidu.com">http:www.baidu.com</el-link>
+                        </el-col>
+                        <el-col :span="12" class="pd10">
+                          <el-tag>发行时间:</el-tag> 2020-02-05
+                        </el-col>
+                      </el-row>
+                    </el-col>
+                    <el-col :span="11">
+                      <el-row>
+                        <el-col :span="12" class="pd10">
+                          <el-tag>版本名称:</el-tag> IOS版本
+                        </el-col>
+                        <el-col :span="12" class="pd10">
+                          <el-tag>游戏大小:</el-tag> 150M
+                        </el-col>
+                      </el-row>
+                      <el-row>
+                        <el-col :span="12" class="pd10">
+                          <el-tag>下载地址:</el-tag> <el-link type="primary" href="http:www.baidu.com">http:www.baidu.com</el-link>
+                        </el-col>
+                        <el-col :span="12" class="pd10">
+                          <el-tag>发行时间:</el-tag> 2020-02-05
+                        </el-col>
+                      </el-row>
+                    </el-col>
+                  </el-row>
+              </el-col>
+            </el-row>
+            <el-row class="list-box">
+              <el-col :span="2">
+                <span class="left-desc">所属游戏类型 :</span>
+              </el-col>
+              <el-col :span="22">
+                <div>
+                  <el-tag type="primary">棋牌类</el-tag>
+                </div>
+              </el-col>
+            </el-row>
+          </el-card>
+        </el-table-column>
         <el-table-column label="ID" width="60" align="center">
           <template slot-scope="scope">
             <span style="margin-left: 10px">{{ scope.row.id }}</span>
@@ -43,8 +144,9 @@
             ></el-image>
           </template>
         </el-table-column>
-        <el-table-column label="浏览次数" width="200" prop="browseCount" align="center" sortable></el-table-column>
-        <el-table-column label="发布时间" width="250" prop="createTime" align="center" sortable></el-table-column>
+        <el-table-column label="下载次数" width="100" prop="downloadCount" align="center" sortable></el-table-column>
+        <el-table-column label="游戏简介" prop="description" align="center"></el-table-column>
+        <el-table-column label="发布时间" width="200" prop="createTime" align="center" sortable></el-table-column>
         <el-table-column
           label="游戏状态"
           :filters="[{ text: '上架', value: 1 }, { text: '维护中', value: 2 }, { text: '下架', value: 3 }]"
@@ -118,10 +220,14 @@
     </template>
     <!-- 游戏新增 -->
     <template>
-      <el-dialog :title="gameTitle" :visible.sync="dialogVisible" width="60%" :before-close="handleClose">
+      <el-dialog
+        :title="gameTitle"
+        :visible.sync="dialogVisible"
+        width="60%"
+        :before-close="handleClose"
+      >
         <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px">
-        <el-form-item label="游戏名" prop="name">
-        </el-form-item>
+          <el-form-item label="游戏名" prop="name"></el-form-item>
         </el-form>
       </el-dialog>
     </template>
@@ -151,8 +257,8 @@ export default {
       ruleForm: {
         name: "", // 游戏名称
         type: "", // 游戏类别
-
-      }
+      },
+      rules: {},
     };
   },
   methods: {
@@ -182,13 +288,13 @@ export default {
     },
     // 新增游戏
     addGame() {
-      this.gameTitle = "新增游戏"
-      this.dialogVisible = true
+      this.gameTitle = "新增游戏";
+      this.dialogVisible = true;
     },
     // 修改游戏
     editGame() {
-      this.gameTitle = "修改游戏"
-      this.dialogVisible = true
+      this.gameTitle = "修改游戏";
+      this.dialogVisible = true;
     },
     // 游戏过滤
     filterGames(value, row) {
@@ -275,5 +381,21 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.left-desc {
+  color: #999999;
+}
+.list-box {
+  padding: 20px 0px;
+  border-bottom: 2px dashed #eeeeee;
+}
+.pd10 {
+  padding: 10px;
+}
+.r-line {
+  border-right: 1px solid #eeeeee;
+}
+.android {
+  background: #6099fb;
 }
 </style>

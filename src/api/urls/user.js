@@ -154,5 +154,18 @@ export default {
    // 修改反馈状态
    setFeedBackStatus: "/feedback/approval",
    // 删除反馈
-   delFeedBack: "/feedback/delete"
+   delFeedBack: "/feedback/delete",
+
+   // 获取活动公告列表
+   getActiveList: "/activity/list",
+   // 查看活动公告
+   getActive: "/activity/detail",
+   // 增加活动公告
+   addActive: "/activity/insert",
+   // 修改活动公告
+   setActive: "/activity/insert",
+   // 修改活动公告状态
+   setActiveStatus: "/activity/operate",
+   // 删除活动公告
+   delActive: "/activity/delete"
 }

@@ -200,6 +200,10 @@ export default {
   fetchGetGameList(data) {
     return axios.get(userUrls.getGameList, {params: data})
   },
+  // 获取游戏详情
+  fetchGetGame(data) {
+    return axios.get(userUrls.getGame, {params: data})
+  },
   // 增加游戏
   fetchAddGame(data) {
     return axios.get(userUrls.addGame, data)
@@ -215,6 +219,23 @@ export default {
   // 删除游戏
   fetchDelGame(data) {
     return axios.post(userUrls.delGame, data)
+  },
+
+  // 获取版本信息
+  fetchGetVersions(data) {
+    return axios.get(userUrls.getVersions, {params: data})
+  },
+  // 增加版本信息
+  fetchAddVersions(data) {
+    return axios.post(userUrls.addVersions, data)
+  },
+  // 修改版本信息
+  fetchEditVersions(data) {
+    return axios.post(userUrls.editVersions, data)
+  },
+  // 删除版本信息
+  fetchDelVersions(data) {
+    return axios.post(userUrls.delVersions, data)
   },
   
   // 获取游戏类型列表

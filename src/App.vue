@@ -70,4 +70,8 @@ a{
 .hide-relative {
   position: relative;
 }
+// elementUI上传后隐藏上传框
+.hide_up .el-upload--picture-card {
+	display: none;
+}
 </style>

@@ -113,10 +113,12 @@ export default {
 
    // 获取游戏列表
    getGameList: "/game/list",
+   // 获取游戏详情
+   getGame: "/game/detail",
    // 新增游戏
    addGame: "/game/insert",
    // 修改游戏状态
-   setGameStatus: "",
+   setGameStatus: "/game/shelf",
    // 编辑游戏
    editGame: "",
    // 删除游戏
@@ -130,6 +132,15 @@ export default {
    setGameType: "/gameType/update",
    // 删除游戏类型
    delGameType: "/gameType/delete",
+   
+   // 获取版本信息
+   getVersions: "/gameExtend/detail",
+   // 增加版本信息
+   addVersions: "/gameExtend/insert",
+   // 修改版本信息
+   editVersions: "/gameExtend/insert",
+   // 删除版本信息
+   delVersions: "/gameExtend/delete",
 
    // 获取积分配置
    getIntegrayList: "/dailyTask/list",

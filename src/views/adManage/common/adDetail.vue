@@ -24,8 +24,7 @@
         <el-form-item label="投放链接" prop="adLink">
           <el-row>
             <el-col :span="10">
-              <el-input placeholder="请输入广告链接" v-model="ruleForm.adLink">
-              </el-input>
+              <el-input placeholder="请输入广告链接" v-model="ruleForm.adLink"></el-input>
             </el-col>
           </el-row>
         </el-form-item>
@@ -33,13 +32,23 @@
           <el-row :span="8">
             <el-col :span="3">
               <el-form-item label required prop="startTime">
-                <el-date-picker v-model="ruleForm.startTime" type="datetime" placeholder="选择日期时间"></el-date-picker>
+                <el-date-picker
+                  value-format="yyyy-MM-dd HH:mm:ss"
+                  v-model="ruleForm.startTime"
+                  type="datetime"
+                  placeholder="选择日期时间"
+                ></el-date-picker>
               </el-form-item>
             </el-col>
             <el-col :span="2" align="center">至</el-col>
             <el-col :span="3">
               <el-form-item label required prop="stopTime">
-                <el-date-picker v-model="ruleForm.stopTime" type="datetime" placeholder="选择日期时间"></el-date-picker>
+                <el-date-picker
+                  value-format="yyyy-MM-dd HH:mm:ss"
+                  v-model="ruleForm.stopTime"
+                  type="datetime"
+                  placeholder="选择日期时间"
+                ></el-date-picker>
               </el-form-item>
             </el-col>
           </el-row>
@@ -88,10 +97,10 @@
 export default {
   name: "adDetail",
   props: {
-      isEdit: {
-          type: Boolean,
-          default: false
-      }
+    isEdit: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -103,12 +112,11 @@ export default {
         adImg: "", // 封面图
         adPeopleName: "", // 投放人名称
         status: true, // 投放状态
-        name: "", // 发布人昵称
+        id: null, // 发布人昵称
         adLink: "", // 投放链接
         startTime: "", // 开始投放时间
         stopTime: "", // 投放终止时间
         allTime: "", // 投放总时长
-        time: "", // 投放时间
         money: 0, // 投放金额
       },
       rules: {
@@ -150,8 +158,27 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          console.log(this.ruleForm);
-          alert("submit!");
+          // 计算总时天数
+          let startTime = new Date(this.ruleForm.startTime);
+          let stopTime = new Date(this.ruleForm.stopTime);
+          this.ruleForm.allTime = Math.floor(
+            (stopTime - startTime) / 1000 / 60 / 60 / 24
+          );
+          this.$request.fetchAddAd(this.ruleForm).then((res) => {
+            if (res.data.code === 200) {
+              if (!this.isEdit) {
+                this.$message.success("新增成功");
+              } else {
+                this.$message.success("保存成功");
+              }
+            } else {
+              if (!this.isEdit) {
+                this.$message.error("新增失败");
+              } else {
+                this.$message.error("保存失败");
+              }
+            }
+          });
         } else {
           console.log("error submit!!");
           return false;
@@ -214,6 +241,31 @@ export default {
           this.progressPercent = Math.abs(item.percentage.toFixed(0));
         }
       });
+    },
+    // 获取广告详情
+    getAdData(id) {
+      if (this.isEdit) {
+        this.$request.fetchGetAd({ id: id }).then((res) => {
+          if (res.data.code === 200) {
+            this.ruleForm = res.data.data;
+          } else {
+            this.$message.error("数据加载失败");
+          }
+        });
+      }
+    },
+  },
+  mounted() {
+    this.getAdData(this.$route.query.id)
+  },
+  watch: {
+    "$route": {
+      handler(newVal) {
+        if (newVal) {
+          this.getAdData(this.$route.query.id);
+        }
+      },
+      deep: true,
     },
   },
 };

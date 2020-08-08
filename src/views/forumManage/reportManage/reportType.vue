@@ -16,7 +16,7 @@
       required: true, message: '类型名称不能为空', trigger: 'blur'
     }"
         >
-          <el-input v-model="item.name" class="w400" clearable maxlength="15" show-word-limit></el-input>
+          <el-input v-model="item.name" class="w400" clearable maxlength="15" show-word-limit @change="$forceUpdate()"></el-input>
           <el-button @click.prevent="removeDomain(item)" type="danger">删除</el-button>
         </el-form-item>
         <el-form-item v-if="lastReport && lastReport.length>0" :label="lastReport[0].name">
@@ -33,6 +33,7 @@
 </template>
 <script>
 export default {
+  name: "reportType",
   data() {
     return {
       dynamicValidateForm: {

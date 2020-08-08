@@ -6,7 +6,7 @@
           <el-col :span="12">
             <el-form :inline="true" :model="searchPage" class="demo-form-inline">
               <el-form-item label="广告查询">
-                <el-input v-model="searchPage.nickname" placeholder="请输入广告标题查询"></el-input>
+                <el-input v-model="searchPage.title" placeholder="请输入广告标题查询"></el-input>
               </el-form-item>
               <el-form-item>
                 <el-button type="primary" @click="onSubmit">查询</el-button>
@@ -30,21 +30,7 @@
             <span style="margin-left: 10px">{{ scope.row.id }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="广告标题" align="center" width="200">
-          <template slot-scope="scope">
-            <el-link
-              type="primary"
-              target="_blank"
-              :href="httpUrl+'/activeNotice/?id='+scope.row.id"
-              v-if="scope.row.type === 1"
-            >{{ scope.row.title}}</el-link>
-            <el-link
-              type="success"
-              target="_blank"
-              :href="scope.row.content"
-              v-else
-            >{{ scope.row.title}}</el-link>
-          </template>
+        <el-table-column label="广告标题" prop="title" align="center" width="200">
         </el-table-column>
         <el-table-column label="广告封面" prop="adImg" align="center" width="200">
           <template slot-scope="prop">
@@ -60,10 +46,10 @@
         <el-table-column label="投放人" prop="adPeopleName" align="center" width="100"></el-table-column>
         <el-table-column label="投放链接" prop="adLink" align="center" width="250">
             <template slot-scope="scope">
-                <el-link type="primary" :href="scope.row.adLink">{{scope.row.adLink}}</el-link>
+                <el-link type="primary" :href="scope.row.adLink" target="_blank">{{scope.row.adLink}}</el-link>
             </template>
         </el-table-column>
-        <el-table-column label="发布人" prop="name" align="center" width="100"></el-table-column>
+        <el-table-column label="发布人" prop="username" align="center" width="100"></el-table-column>
         <el-table-column
           label="投放状态"
           align="center"
@@ -89,10 +75,14 @@
                 </el-row>
             </template>
         </el-table-column>
-        <el-table-column label="总投放时间" prop="allTime" align="center" width="100"></el-table-column>
+        <el-table-column label="总投放时间" prop="allTime" align="center" width="100">
+          <template slot-scope="scope">
+            {{scope.row.allTime}} 天
+          </template>
+        </el-table-column>
         <el-table-column label="投放金额"  align="center" width="100">
             <template slot-scope="scope">
-               <span>{{scope.row.money}} 元</span>
+               <span>￥{{scope.row.money}}</span>
             </template>
         </el-table-column>
         <el-table-column label="发布时间" width="200" prop="createTime" align="center" sortable></el-table-column>
@@ -132,47 +122,14 @@ export default {
   data() {
     return {
       visibleList: [], // 初始化为一个空数组
-      tableData: [
-        {
-          id: 1,
-          title: "广告1", // 广告title
-          adImg:
-            "https://dss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2534506313,1688529724&fm=26&gp=0.jpg", // 封面图
-          adImgArr: ["https://dss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2534506313,1688529724&fm=26&gp=0.jpg"],
-          adPeopleName: "投放人名称", // 投放人名称
-          status: true, // 投放状态
-          name: "发布人1", // 发布人昵称
-          adLink: "http://www.baidu.com", // 投放链接
-          startTime: "2020-01-02 14:00:00", // 开始投放时间
-          stopTime: "2020-03-03 16:00:00", // 投放终止时间
-          allTime: "3个月", // 投放总时长
-          money: 3000, // 投放金额
-          createTime: "2020-08-11 14:00:00",
-        },
-         {
-          id: 1,
-          title: "广告1", // 广告title
-          adImg:
-            "https://dss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2534506313,1688529724&fm=26&gp=0.jpg", // 封面图
-          adImgArr: ["https://dss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2534506313,1688529724&fm=26&gp=0.jpg"],
-          adPeopleName: "投放人名称", // 投放人名称
-          status: false, // 投放状态
-          name: "发布人1", // 发布人昵称
-          adLink: "http://www.baidu.com", // 投放链接
-          startTime: "2020-01-02 14:00:00", // 开始投放时间
-          stopTime: "2020-03-03 16:00:00", // 投放终止时间
-          allTime: "3个月", // 投放总时长
-          money: 3000, // 投放金额
-          createTime: "2020-08-11 14:00:00",
-        },
-      ],
+      tableData: [],
       multipleSelection: [], // 勾选
       emptyText: "加载中...",
       // 翻页
       searchPage: {
         page: 1,
         pageSize: 10,
-        nickname: "",
+        title: "",
       },
       totalCount: 0, // 总条数
       totalPage: 0, // 总页数
@@ -185,7 +142,7 @@ export default {
     },
     // 删除
     handleDelete(index, id) {
-      this.$request.fetchDelActive({ id: id }).then((res) => {
+      this.$request.fetchDelAd({ id: id }).then((res) => {
         if (res.data.code === 200) {
           // 移除索引对应的那条数据
           this.tableData.splice(index, 1);
@@ -256,7 +213,7 @@ export default {
     // 状态修改
     setStatus(val, id) {
       this.$request
-        .fetchSetActiveStatus({
+        .fetchSetAdStatus({
           id: id,
         })
         .then((res) => {
@@ -269,9 +226,9 @@ export default {
     },
     // 获取列表
     getList(data) {
-      this.$request.fetchGetActiveList(data).then((res) => {
+      this.$request.fetchGetAdList(data).then((res) => {
         if (res.data.code === 200) {
-          // this.tableData = res.data.data.list;
+          this.tableData = res.data.data.list;
           this.searchPage.page = res.data.data.currPage;
           this.totalCount = res.data.data.totalCount;
           this.totalPage = res.data.data.totalPage;

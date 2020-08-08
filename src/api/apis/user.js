@@ -206,7 +206,7 @@ export default {
   },
   // 增加游戏
   fetchAddGame(data) {
-    return axios.get(userUrls.addGame, data)
+    return axios.post(userUrls.addGame, data)
   },
   // 修改游戏状态
   fetchSetGameStatus(data) {
@@ -325,6 +325,31 @@ export default {
   // 删除活动公告
   fetchDelActive(data) {
     return axios.post(userUrls.delActive, data)
-  }
+  },
+
+  // 获取广告列表
+  fetchGetAdList(data) {
+    return axios.get(userUrls.getAdList, {params: data})
+  },
+  // 获取广告
+  fetchGetAd(data) {
+    return axios.get(userUrls.getAd, {params: data})
+  },
+  // 新增广告
+  fetchAddAd(data) {
+    return axios.post(userUrls.addAd, data)
+  },
+  // 修改广告状态
+  fetchSetAdStatus(data) {
+    return axios.post(userUrls.setAdStatus, data)
+  },
+  // 修改广告
+  fetchSetAd(data) {
+    return axios.post(userUrls.setAd, data)
+  }, 
+  // 删除广告
+  fetchDelAd(data) {
+    return axios.post(userUrls.delAd, data)
+  }, 
 }
 

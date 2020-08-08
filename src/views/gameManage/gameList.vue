@@ -21,144 +21,152 @@
       <el-table :data="tableData" style="width: 100%" @expand-change="expandChange">
         <el-table-column type="expand">
           <template slot-scope="scope">
-          <el-card>
-            <div v-if="gameLoad">
-              <el-row class="list-box">
-                <el-col :span="2">
-                  <span class="left-desc">游戏名 :</span>
-                </el-col>
-                <el-col :span="22">
-                  <div>{{gameObj.name}}</div>
-                </el-col>
-              </el-row>
-              <el-row class="list-box">
-                <el-col :span="2">
-                  <span class="left-desc">简介 :</span>
-                </el-col>
-                <el-col :span="22">
-                  <div>{{gameObj.description}}</div>
-                </el-col>
-              </el-row>
-              <el-row class="list-box">
-                <el-col :span="2">
-                  <span class="left-desc">主页背景图 :</span>
-                </el-col>
-                <el-col :span="22">
-                  <div>
-                    <el-image
-                      style="width:150px;height:80px"
-                      v-if="gameObj.backgroundImg.length>0"
-                      :src="gameObj.backgroundImg"
-                      fit="cover"
-                      :preview-src-list="[gameObj.backgroundImg]"
-                    ></el-image>
-                  </div>
-                </el-col>
-              </el-row>
-              <el-row class="list-box">
-                <el-col :span="2">
-                  <span class="left-desc">游戏截图 :</span>
-                </el-col>
-                <el-col :span="22">
-                  <div>
-                    <el-row v-if="gameObj.screenshotsList && gameObj.screenshotsList.length>0">
-                      <el-col :span="2" v-for="item in gameObj.screenshotsList" :key="item">
-                        <el-image
-                          style="width:80px;height:80px"
-                          :src="item"
-                          fit="cover"
-                          :preview-src-list="gameObj.screenshotsList"
-                        ></el-image>
+            <el-card>
+              <div v-if="gameLoad">
+                <el-row class="list-box">
+                  <el-col :span="2">
+                    <span class="left-desc">游戏名 :</span>
+                  </el-col>
+                  <el-col :span="22">
+                    <div>{{gameObj.name}}</div>
+                  </el-col>
+                </el-row>
+                <el-row class="list-box">
+                  <el-col :span="2">
+                    <span class="left-desc">简介 :</span>
+                  </el-col>
+                  <el-col :span="22">
+                    <div>{{gameObj.description}}</div>
+                  </el-col>
+                </el-row>
+                <el-row class="list-box">
+                  <el-col :span="2">
+                    <span class="left-desc">主页背景图 :</span>
+                  </el-col>
+                  <el-col :span="22">
+                    <div>
+                      <el-image
+                        style="width:150px;height:80px"
+                        v-if="gameObj.backgroundImg.length>0"
+                        :src="gameObj.backgroundImg"
+                        fit="cover"
+                        :preview-src-list="[gameObj.backgroundImg]"
+                      ></el-image>
+                    </div>
+                  </el-col>
+                </el-row>
+                <el-row class="list-box">
+                  <el-col :span="2">
+                    <span class="left-desc">游戏截图 :</span>
+                  </el-col>
+                  <el-col :span="22">
+                    <div>
+                      <el-row v-if="gameObj.screenshotsList && gameObj.screenshotsList.length>0">
+                        <el-col :span="2" v-for="item in gameObj.screenshotsList" :key="item">
+                          <el-image
+                            style="width:80px;height:80px"
+                            :src="item"
+                            fit="cover"
+                            :preview-src-list="gameObj.screenshotsList"
+                          ></el-image>
+                        </el-col>
+                      </el-row>
+                    </div>
+                  </el-col>
+                </el-row>
+                <el-row class="list-box">
+                  <el-col :span="2">
+                    <el-row>
+                      <el-col>
+                        <span class="left-desc">版本信息 :</span>
+                      </el-col>
+                      <el-col class="mt50" aling="center">
+                        <el-button
+                          type="primary"
+                          icon="el-icon-plus"
+                          circle
+                          @click="addVersions(scope.row.id)"
+                        ></el-button>
                       </el-col>
                     </el-row>
-                  </div>
-                </el-col>
-              </el-row>
-              <el-row class="list-box">
-                <el-col :span="2">
-                  <el-row>
-                    <el-col>
-                      <span class="left-desc">版本信息 :</span>
-                    </el-col>
-                    <el-col class="mt50" aling="center">
-                      <el-button type="primary" icon="el-icon-plus" circle @click="addVersions(scope.row.id)"></el-button>
-                    </el-col>
-                  </el-row>
-                </el-col>
-                <el-col :span="22">
-                  <el-row v-if="gameObj.extendList && gameObj.extendList.length>0" class="versions">
-                    <el-col
-                      :span="11"
-                      v-for="(bitem, index) in gameObj.extendList"
-                      :key="bitem.name"
+                  </el-col>
+                  <el-col :span="22">
+                    <el-row
+                      v-if="gameObj.extendList && gameObj.extendList.length>0"
+                      class="versions"
                     >
-                      <el-row>
-                        <el-col :span="12" class="pd10">
-                          <el-tag class="mr-10">版本名称:</el-tag>
-                          {{bitem.name}}
-                        </el-col>
-                        <el-col :span="12" class="pd10">
-                          <el-tag class="mr-10">游戏大小:</el-tag>
-                          {{bitem.gameSize}}M
-                        </el-col>
-                      </el-row>
-                      <el-row>
-                        <el-col :span="12" class="pd10">
-                          <el-tag class="mr-10">下载地址:</el-tag>
-                          <a
-                            :href="bitem.gameUrl"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="el-icon-download"
-                          >点击下载</a>
-                        </el-col>
-                        <el-col :span="12" class="pd10">
-                          <el-tag class="mr-10">发行时间:</el-tag>
-                          {{bitem.updateTime}}
-                        </el-col>
-                      </el-row>
-                      <el-row class="mt10">
-                        <div class="versions-bottom">
-                          <el-row>
-                            <el-col align="right">
-                              <el-button
-                                type="primary"
-                                icon="el-icon-edit"
-                                circle
-                                @click="editVersions(index, bitem.id, scope.row.id)"
-                              ></el-button>
-                              <el-button
-                                type="danger"
-                                icon="el-icon-delete"
-                                circle
-                                @click="delVersions(index, bitem.id)"
-                              ></el-button>
-                            </el-col>
-                          </el-row>
-                        </div>
-                      </el-row>
-                    </el-col>
-                  </el-row>
-                </el-col>
-              </el-row>
-              <el-row class="list-box">
-                <el-col :span="2">
-                  <span class="left-desc">所属游戏类型 :</span>
-                </el-col>
-                <el-col :span="22">
-                  <div v-if="gameObj.typeList && gameObj.typeList.length>0">
-                    <el-tag
-                      class="mr10"
-                      type="primary"
-                      v-for="titem in gameObj.typeList"
-                      :key="titem.name"
-                    >{{titem.name}}</el-tag>
-                  </div>
-                </el-col>
-              </el-row>
-            </div>
-            <div v-else class="content-text">{{gameText}}</div>
-          </el-card>
+                      <el-col
+                        :span="11"
+                        v-for="(bitem, index) in gameObj.extendList"
+                        :key="bitem.name"
+                      >
+                        <el-row>
+                          <el-col :span="12" class="pd10">
+                            <el-tag class="mr-10">版本名称:</el-tag>
+                            {{bitem.name}}
+                          </el-col>
+                          <el-col :span="12" class="pd10">
+                            <el-tag class="mr-10">游戏大小:</el-tag>
+                            {{bitem.gameSize}}M
+                          </el-col>
+                        </el-row>
+                        <el-row>
+                          <el-col :span="12" class="pd10">
+                            <el-tag class="mr-10">下载地址:</el-tag>
+                            <a
+                              :href="bitem.gameUrl"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              class="el-icon-download"
+                            >点击下载</a>
+                          </el-col>
+                          <el-col :span="12" class="pd10">
+                            <el-tag class="mr-10">发行时间:</el-tag>
+                            {{bitem.updateTime}}
+                          </el-col>
+                        </el-row>
+                        <el-row class="mt10">
+                          <div class="versions-bottom">
+                            <el-row>
+                              <el-col align="right">
+                                <el-button
+                                  type="primary"
+                                  icon="el-icon-edit"
+                                  circle
+                                  @click="editVersions(index, bitem.id, scope.row.id)"
+                                ></el-button>
+                                <el-button
+                                  type="danger"
+                                  icon="el-icon-delete"
+                                  circle
+                                  @click="delVersions(index, bitem.id)"
+                                ></el-button>
+                              </el-col>
+                            </el-row>
+                          </div>
+                        </el-row>
+                      </el-col>
+                    </el-row>
+                  </el-col>
+                </el-row>
+                <el-row class="list-box">
+                  <el-col :span="2">
+                    <span class="left-desc">所属游戏类型 :</span>
+                  </el-col>
+                  <el-col :span="22">
+                    <div v-if="gameObj.typeList && gameObj.typeList.length>0">
+                      <el-tag
+                        class="mr10"
+                        type="primary"
+                        v-for="titem in gameObj.typeList"
+                        :key="titem.name"
+                      >{{titem.name}}</el-tag>
+                    </div>
+                  </el-col>
+                </el-row>
+              </div>
+              <div v-else class="content-text">{{gameText}}</div>
+            </el-card>
           </template>
         </el-table-column>
         <el-table-column label="ID" width="60" align="center">
@@ -263,7 +271,7 @@
         width="60%"
         :before-close="handleClose"
       >
-        <game></game>
+        <Game ref="childGame" :gameid="gameId" @closeBox="closeCallBack" :isedit="isEditGame"></Game>
       </el-dialog>
     </template>
     <!-- 游戏版本 -->
@@ -285,8 +293,12 @@
             <el-input v-model="vsRuleForm.gameUrl"></el-input>
           </el-form-item>
           <el-form-item align="right">
-            <el-button type="primary" v-if="!isVsEdit" @click="saveVersions('vsRuleForm')">新 增</el-button>
-            <el-button type="primary" v-else @click="saveVersions('vsRuleForm')">保 存</el-button>
+            <el-button
+              type="primary"
+              v-if="!isVsEdit"
+              @click="saveVersions('vsRuleForm', vsRuleForm.id)"
+            >新 增</el-button>
+            <el-button type="primary" v-else @click="saveVersions('vsRuleForm', vsRuleForm.id)">保 存</el-button>
           </el-form-item>
         </el-form>
       </el-dialog>
@@ -295,11 +307,11 @@
 </template>
 
 <script>
-import game from "./common/game"
+import Game from "./common/game";
 export default {
   name: "gameList",
   components: {
-    game
+    Game,
   },
   data() {
     return {
@@ -327,13 +339,15 @@ export default {
       gameText: "加载中...", // 游戏详情加载提示
       gameLoad: false, // 判断游戏详情是否加载完成
       vsDialogVisible: false, // 游戏版本新增、修改弹窗
+      isEditGame: false, // 是否为编辑游戏
+      gameId: 0, // 当前编辑游戏id
       vsTitle: "",
       vsRuleForm: {
-        gameId: undefined, // 游戏id
+        gameId: null, // 游戏id
         name: "", // 版本名称
         gameSize: 0, // 游戏大小
         gameUrl: "", // 下载路径
-        id: undefined, // 版本id
+        id: null, // 版本id
       },
       vsRadio: "", // 选择的版本
       isVsEdit: false, // 是否编辑
@@ -347,21 +361,28 @@ export default {
         ],
         gameUrl: [
           { required: true, message: "请输入游戏下载链接", trigger: "blur" },
-        ]
+        ],
       },
     };
   },
   methods: {
     handleClose(done) {
-      this.$confirm("确认关闭？")
-        .then((_) => {
-          done();
-        })
-        .catch((_) => {});
+      // 调用子组件清空表单方法
+      this.$refs.childGame.resetData();
+      done();
+    },
+    // 子组件调用关闭方法
+    closeCallBack(val) {
+      // 调用子组件清空表单方法
+      this.$refs.childGame.resetData();
+      // 关闭弹出框
+      this.dialogVisible = false;
+      // 刷新数据
+      this.getList(this.searchPage);
     },
     // 删除
-    handleDelete(index, nid) {
-      this.$request.fetchDelNotice({ id: nid }).then((res) => {
+    handleDelete(index, id) {
+      this.$request.fetchDelGame({ id: id }).then((res) => {
         if (res.data.code === 200) {
           // 移除索引对应的那条数据
           this.tableData.splice(index, 1);
@@ -378,12 +399,22 @@ export default {
     },
     // 新增游戏
     addGame() {
+      this.isEditGame = false;
       this.gameTitle = "新增游戏";
       this.dialogVisible = true;
+      setTimeout(() => {
+        this.$refs.childGame.loading = false;
+      }, 100);
     },
     // 修改游戏
-    editGame() {
+    editGame(index, id) {
+      this.isEditGame = true;
       this.gameTitle = "修改游戏";
+      // 调用子组件获取游戏详情
+      this.gameId = id;
+      setTimeout(() => {
+        this.$refs.childGame.getGameData(id);
+      }, 1000);
       this.dialogVisible = true;
     },
     // 游戏过滤
@@ -474,20 +505,23 @@ export default {
     },
     // 游戏版本
     vsHandleClose(done) {
-      this.$confirm("确认关闭？")
-        .then((_) => {
-          this.vsRuleForm.name = "", // 版本名称
-          this.vsRuleForm.gameId = undefined, // 游戏id
-          this.vsRuleForm.gameSize = 0, // 游戏大小
-          this.vsRuleForm.gameUrl =  "", // 下载路径
-          this.vsRuleForm.id = undefined, // 版本id
-          done();
-        })
-        .catch((_) => {});
+      // 清空表单
+      this.vsRuleForm.name = "" // 版本名称
+      this.vsRuleForm.gameId = null;
+      this.vsRuleForm.gameSize = 0 // 游戏大小
+      this.vsRuleForm.gameUrl = "" // 下载路径
+      this.vsRuleForm.id = null // 版本id
+      done();
     },
     // 版本新增
     addVersions(gameId) {
-      this.vsRuleForm.gameId = gameId
+      // 清空表单
+      this.vsRuleForm.name = "" // 版本名称
+      this.vsRuleForm.gameSize = 0 // 游戏大小
+      this.vsRuleForm.gameUrl = "" // 下载路径
+      this.vsRuleForm.id = null // 版本id
+
+      this.vsRuleForm.gameId = gameId;
       this.vsTitle = "新增版本";
       this.isVsEdit = false;
       this.vsDialogVisible = true;
@@ -495,41 +529,52 @@ export default {
     // 版本修改
     editVersions(index, vsId, gameId) {
       // 获取当前版本信息
-      this.$request.fetchGetVersions({id: vsId}).then( res => {
-        if(res.data.code === 200) {
-          this.vsRuleForm = res.data.data
+      this.$request.fetchGetVersions({ id: vsId }).then((res) => {
+        if (res.data.code === 200) {
+          this.vsRuleForm = res.data.data;
         } else {
-          this.$message.error("数据加载失败")
+          this.$message.error("数据加载失败");
         }
-      })
+      });
       this.vsTitle = "修改版本";
       this.isVsEdit = true;
       this.vsDialogVisible = true;
     },
     // 版本删除
     delVersions(index, vsId) {
-      this.$request.fetchDelVersions({id: vsId}).then( res => {
-        if(res.data.code === 200) {
+      this.$request.fetchDelVersions({ id: vsId }).then((res) => {
+        if (res.data.code === 200) {
           // 数据删除
-         this.tableData.splice(index, 1);
-          this.$message.success("删除成功")
+          this.gameObj.extendList.splice(index, 1);
+          this.$message.success("删除成功");
         } else {
-          this.$message.error("删除失败")
+          this.$message.error("删除失败");
         }
-      })
+      });
     },
     // 版本新增、修改提交
-    saveVersions(formName) {
+    saveVersions(formName, id) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.$request.fetchAddVersions(this.vsRuleForm).then((res) => {
             if (res.data.code === 200) {
               if (!this.isVsEdit) {
+                // 刷新数据
+                let vsObj = this.vsRuleForm
+                vsObj.id = res.data.data.id
+                vsObj.updateTime = res.data.data.updateTime
+                this.gameObj.extendList.push(vsObj)
                 this.$message.success("新增成功");
               } else {
+                // 刷新数据 - 根据当前id获取当前索引，改变当前数据
+                this.gameObj.extendList.forEach((item, index) => {
+                  if (item.id === id) {
+                    this.gameObj.extendList[index] = this.vsRuleForm;
+                  }
+                });
                 this.$message.success("保存成功");
               }
-              this.vsDialogVisible = false
+              this.vsDialogVisible = false;
             } else {
               if (!this.isVsEdit) {
                 this.$message.error("新增失败");

@@ -120,7 +120,7 @@ export default {
    // 修改游戏状态
    setGameStatus: "/game/shelf",
    // 编辑游戏
-   editGame: "",
+   editGame: "/game/insert",
    // 删除游戏
    delGame: "/game/delete",
 
@@ -178,5 +178,18 @@ export default {
    // 修改活动公告状态
    setActiveStatus: "/activity/operate",
    // 删除活动公告
-   delActive: "/activity/delete"
+   delActive: "/activity/delete",
+
+   // 获取广告列表
+   getAdList: "/advert/list",
+   // 获取广告
+   getAd: "/advert/detail",
+   // 新增广告
+   addAd: "/advert/insert",
+   // 修改广告状态
+   setAdStatus: "",
+   // 修改广告
+   setAd: "/advert/insert",
+   // 删除广告
+   delAd: "/advert/delete"
 }

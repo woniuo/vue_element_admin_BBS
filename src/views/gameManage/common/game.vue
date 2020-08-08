@@ -1,6 +1,16 @@
 <template>
   <div>
-    <el-form :model="gmRuleForm" :rules="gmRules" ref="gmRuleForm" label-width="100px">
+    <el-form
+      :model="gmRuleForm"
+      :rules="gmRules"
+      ref="gmRuleForm"
+      label-width="100px"
+      class="hide-relative"
+    >
+      <div class="hide-loading" v-if="loading">
+        <el-icon class="el-icon-loading" style="font-size:30px"></el-icon>
+        <span>加载中...</span>
+      </div>
       <el-card class="mt5">
         <el-row>
           <el-col :span="12">
@@ -17,7 +27,12 @@
               </el-col>
               <el-col :span="24">
                 <el-form-item label="游戏类型" prop="typeIds">
-                  <el-select v-model="gmRuleForm.typeIds" placeholder="请选择">
+                  <el-select
+                    v-model="gmRuleForm.typeIds"
+                    multiple
+                    placeholder="请选择"
+                    @change="$forceUpdate()"
+                  >
                     <el-option
                       v-for="item in gameTypeArr"
                       :key="item.id"
@@ -111,7 +126,8 @@
         </el-form-item>
       </el-card>
       <el-form-item align="right">
-        <el-button type="primary" @click="submitForm('gmRuleForm')">发 布</el-button>
+        <el-button type="primary" @click="submitForm('gmRuleForm')" v-if="!isedit">发 布</el-button>
+        <el-button type="primary" @click="submitForm('gmRuleForm')" v-else>保 存</el-button>
         <el-button @click="resetForm('gmRuleForm')">重 置</el-button>
       </el-form-item>
     </el-form>
@@ -119,6 +135,17 @@
 </template>
 <script>
 export default {
+  name: "game",
+  props: {
+    isedit: {
+      type: Boolean,
+      default: false,
+    },
+    gameid: {
+      type: Number,
+      default: null,
+    },
+  },
   data() {
     return {
       progressFlag: false, // 进度条是否显示
@@ -126,11 +153,11 @@ export default {
       bgProgressFlag: false, // 进度条是否显示
       bgProgressPercent: 0,
       gmRuleForm: {
-        id: undefined, // 游戏id
+        id: this.gameid, // 游戏id
         name: "", // 游戏名称
         description: "", // 游戏简介
         downloadCount: 0, // 下载次数
-        typeIds: undefined, // 游戏类型
+        typeIds: null, // 游戏类型
         cover: "", // 游戏封面图
         backgroundImg: "", // 游戏背景图
         screenshots: [], // 游戏截图
@@ -140,6 +167,7 @@ export default {
       dialogVisible: false, // 游戏截图上传组件
       hideUpload: false, // 是否隐藏上传组件
       limit: 12, // 图片上传限制
+      loading: true, // 数据加载时的loading
       gmRules: {
         name: [
           { required: true, message: "请输入游戏名称", trigger: "blur" },
@@ -153,7 +181,7 @@ export default {
           { required: true, message: "下载次数不能为空", trigger: "change" },
         ],
         typeIds: [
-          { required: true, message: "游戏类型不能为空", trigger: "change" },
+          { required: true, message: "游戏类型不能为空", trigger: "blur" },
         ],
         cover: [
           { required: true, message: "游戏封面不能为空", trigger: "blur" },
@@ -171,15 +199,46 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-            console.log(this.gmRuleForm)
-            return
-          this.$request.fetchAddNews(this.ruleForm).then((res) => {
+          let subObj = {};
+          let {
+            id,
+            name,
+            description,
+            downloadCount,
+            cover,
+            backgroundImg,
+          } = this.gmRuleForm;
+          subObj = {
+            id,
+            name,
+            description,
+            downloadCount,
+            cover,
+            backgroundImg,
+          };
+          subObj.typeIds = this.gmRuleForm.typeIds.toString();
+          let screenshotsArr = [];
+          this.gmRuleForm.screenshots.forEach((item) => {
+            screenshotsArr.push(item.url);
+          });
+          subObj.screenshots = screenshotsArr.toString();
+          this.$request.fetchAddGame(subObj).then((res) => {
             if (res.data.code === 200) {
               // 清除表单
               this.resetForm(formName);
-              this.$message.success("发布成功");
+              if (!this.isedit) {
+                this.$message.success("发布成功");
+              } else {
+                this.$message.success("保存成功");
+              }
+              // 关闭父组件弹框
+              this.$emit("closeBox");
             } else {
-              this.$message.error("发布失败");
+              if (!this.isedit) {
+                this.$message.error("发布失败");
+              } else {
+                this.$message.error("保存失败");
+              }
             }
           });
         } else {
@@ -188,10 +247,24 @@ export default {
         }
       });
     },
+    // 重置
     resetForm(formName) {
       this.$refs[formName].resetFields();
       this.gmRuleForm.cover = "";
-      this.editor.txt.clear();
+      this.gmRuleForm.backgroundImg = "";
+      this.gmRuleForm.screenshots = [];
+    },
+    // 清空表单数据方法
+    resetData() {
+      this.gmRuleForm.id = null; // 游戏id
+      this.gmRuleForm.name = ""; // 游戏名称
+      this.gmRuleForm.description = ""; // 游戏简介
+      this.gmRuleForm.downloadCount = 0; // 下载次数
+      this.gmRuleForm.typeIds = null; // 游戏类型
+      this.gmRuleForm.cover = "";
+      this.gmRuleForm.backgroundImg = "";
+      this.gmRuleForm.screenshots = [];
+      this.loading = true;
     },
     // 游戏封面上传
     handleAvatarSuccess(res, file) {
@@ -281,9 +354,57 @@ export default {
           }
         });
     },
+    // 获取游戏详情
+    getGameData(id) {
+      this.loading = true;
+      this.$request.fetchGetGame({ id: id }).then((res) => {
+        if (res.data.code === 200) {
+          let {
+            id,
+            name,
+            description,
+            downloadCount,
+            cover,
+            backgroundImg,
+          } = res.data.data;
+          this.gmRuleForm = {
+            id,
+            name,
+            description,
+            downloadCount,
+            cover,
+            backgroundImg,
+          };
+          // 因为 gmRuleForm 中的 screenshots 需要是对象格式，{uid: number, url: string}
+          let directivesArr = [];
+          res.data.data.screenshotsList.forEach((item, index) => {
+            directivesArr.push({
+              uid: index,
+              url: item,
+            });
+          });
+          // 截图赋值
+          this.gmRuleForm.screenshots = directivesArr;
+          // 游戏类型赋值
+          let typeIdArr = [];
+          res.data.data.typeList.forEach((item, index) => {
+            typeIdArr.push(item.id);
+          });
+          this.gmRuleForm.typeIds = typeIdArr;
+        } else {
+          this.$message.error("获取数据失败");
+        }
+        this.loading = false;
+      });
+    },
   },
   created() {
     this.getGameType();
+  },
+  watch: {
+    'gameid': function (newVal) {
+      this.gmRuleForm.id = newVal;
+    },
   },
 };
 </script>

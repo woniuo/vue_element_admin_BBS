@@ -1,6 +1,6 @@
 /**
  * Created by WebStorm.
- * User: nirongxu
+ * User: woniuo
  * Date: 2020/4/20
  * Description: 文件描述
  */
@@ -8,18 +8,20 @@ export default {
   // ==============后台相关================
   // 注册/添加账号
   register: "/admin/user/register",
-  // 删除用户
+  // 删除系统用户
   delUser: "/user/delUser",
-  // 修改用户信息
+  // 修改系统用户信息
   editUser: "/user/editUserInfo",
-  // 获取当前用户信息
+  // 获取当前系统用户信息
   getUserInfo: "/permission/getPermission",
-  // 获取用户信息
+  // 获取系统用户信息
   getUserInfoId: "/user/getUserInfoId",
-  // 获取用户列表
-  userList: "/user/userList",
+  // 获取系统用户列表
+  userList: "/tbuser/getAllTbUser",
   // 修改密码
   editPassword: "/user/editPassword",
+  // 修改系统用户状态
+  setSystemUserStatus: "/tbuser/forbidden",
   // ============用户相关================
   // 获取用户列表
   getUserList: "/yfUser/getYfUserList",
@@ -142,6 +144,19 @@ export default {
    // 删除版本信息
    delVersions: "/gameExtend/delete",
 
+   // 获取礼包列表
+   getGiftBagList: "/gift/list",
+   // 获取礼包详情
+   getGiftBag: "/gift/detail",
+   // 新增礼包
+   addGiftBag: "/gift/insert",
+   // 修改礼包
+   editGiftBag: "/gift/insert",
+   // 修改礼包状态
+   setGiftBagStatus: "/gift/shelf",
+   // 删除礼包
+   delGiftBag: "/gift/delete",
+
    // 获取积分配置
    getIntegrayList: "/dailyTask/list",
    // 修改积分配置
@@ -187,7 +202,7 @@ export default {
    // 新增广告
    addAd: "/advert/insert",
    // 修改广告状态
-   setAdStatus: "",
+   setAdStatus: "/advert/updateStatus",
    // 修改广告
    setAd: "/advert/insert",
    // 删除广告

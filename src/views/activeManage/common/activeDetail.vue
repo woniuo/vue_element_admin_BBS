@@ -137,11 +137,14 @@ export default {
             // 本链
             // 为富文本赋值
             this.activeName = "first";
-            this.editor.txt.html(res.data.data.content)
+           this.editor.txt.html(res.data.data.content)
           } else {
             // 切换为外链
             this.activeName = "second";
           }
+        }
+        else if(res.data.code === 500) {
+          this.$router.go(-1);
         } else {
           this.$message.error("数据获取失败");
         }
@@ -161,9 +164,13 @@ export default {
     };
     editor.create();
     this.editor.$textContainerElem.css("height", "500px !important"); //设置高度yo
+    // 判断是否为编辑
+    if (this.isEdit) {
+      this.getActiveData(this.$route.query.id);
+    }
   },
   watch: {
-    $route: {
+    "$route": {
       handler(newVal) {
         if (newVal.query.id) {
           this.ruleForm.id = newVal.query.id;

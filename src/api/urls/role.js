@@ -1,12 +1,12 @@
 /**
  * Created by WebStorm.
- * User: nirongxu
+ * User: woniuo
  * Date: 2020/4/20
  * Description: 文件描述
  */
 export default {
   // 获取角色列表
-  getRoleList: "/permissions/getRoleList",
+  getRoleList: "/tbrole/getRoleList",
   // 增加角色
   addRole: "/permissions/addRole",
   // 删除角色

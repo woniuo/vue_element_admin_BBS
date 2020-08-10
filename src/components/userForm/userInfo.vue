@@ -1,7 +1,5 @@
 <template>
   <el-dialog :title="title" width="600px" :visible.sync="visible" destroy-on-close @close="closeCallback">
-<!--    <div class="card">-->
-<!--    <p class="title"><i class="fa fa-th-large fa-lg"></i>个人资料</p>-->
     <el-form :model="ruleForm2" status-icon :rules="rules" ref="ruleForm2" label-width="100px" class="demo-ruleForm">
       <el-form-item label="用户名" prop="username">
         <el-input v-model="ruleForm2.username" autocomplete="off"></el-input>
@@ -30,18 +28,6 @@
             :disabled="item.disabled">
           </el-option>
         </el-select>
-      </el-form-item>
-      <el-form-item label="姓名" prop="name">
-        <el-input v-model="ruleForm2.name" autocomplete="off"></el-input>
-      </el-form-item>
-      <el-form-item label="性别">
-        <el-radio-group v-model="ruleForm2.sex">
-          <el-radio label="1">男</el-radio>
-          <el-radio label="2">女</el-radio>
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item label="年龄" prop="age">
-        <el-input v-model="ruleForm2.age" autocomplete="off"></el-input>
       </el-form-item>
       <el-form-item label="手机号" prop="mobile_phone">
         <el-input v-model="ruleForm2.mobile_phone" autocomplete="off"></el-input>

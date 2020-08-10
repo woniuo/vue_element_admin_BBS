@@ -38,7 +38,7 @@
               v-if="prop.row.adImg.length>0"
               :src="prop.row.adImg"
               fit="cover"
-              :preview-src-list="prop.row.adImgArr"
+              :preview-src-list="[prop.row.adImg]"
               style="width:50px;height:80px"
             ></el-image>
           </template>
@@ -250,6 +250,7 @@ export default {
           this.getList(this.searchPage);
         }
       },
+      immediate: true
     },
   },
 };

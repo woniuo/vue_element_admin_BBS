@@ -1,9 +1,3 @@
-/**
- * Created by WebStorm.
- * User: nirongxu
- * Date: 2018/12/15
- * Description: 文件描述
- */
 export default {
   install (Vue, options) {
     Vue.directive("roleBtn", {

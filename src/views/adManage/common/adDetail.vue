@@ -248,6 +248,11 @@ export default {
         this.$request.fetchGetAd({ id: id }).then((res) => {
           if (res.data.code === 200) {
             this.ruleForm = res.data.data;
+          }
+          else if (res.data.code === 500) {
+            // this.$message.error("该数据已被删除，正在跳转上一页面");
+            // 返回上一级
+            this.$router.go(-1);
           } else {
             this.$message.error("数据加载失败");
           }
@@ -256,7 +261,9 @@ export default {
     },
   },
   mounted() {
-    this.getAdData(this.$route.query.id)
+    if (this.isEdit) {
+      this.getAdData(this.$route.query.id);
+    }
   },
   watch: {
     "$route": {
@@ -267,6 +274,12 @@ export default {
       },
       deep: true,
     },
+  },
+  beforeRouteLeave(to, from, next) {
+    console.log("sss");
+    console.log(to);
+    console.log(from);
+    console.log(next);
   },
 };
 </script>

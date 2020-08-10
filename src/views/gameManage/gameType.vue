@@ -91,6 +91,7 @@ export default {
     return {
       tableData: [],
       name: "", // 新增游戏类型名称
+      isRepetition: false, // 判断添加类型是否重复
       emptyText: "加载中...",
       searchPage: {
         // 翻页
@@ -106,16 +107,28 @@ export default {
   methods: {
     // 新增游戏类型
     addGameType() {
-      this.$request
-        .fetchAddGameType({ id: "", name: this.name })
-        .then((res) => {
-          if (res.data.code === 200) {
-            this.getGameTypeList(this.searchPage)
-            this.$message.success("新增成功");
-          } else {
-            this.$message.error("新增失败");
-          }
-        });
+      // 判空
+      if (
+        this.name === "" ||
+        this.name === "undifened" ||
+        this.name.length <= 0
+      ) {
+        this.$message.error("类型名称不能为空");
+      } else if (!this.isRepetition) {
+        this.$request
+          .fetchAddGameType({ id: "", name: this.name })
+          .then((res) => {
+            if (res.data.code === 200) {
+              this.getGameTypeList(this.searchPage);
+              this.$message.success("新增成功");
+              this.name = "";
+            } else {
+              this.$message.error("新增失败");
+            }
+          });
+      } else {
+        this.$message.error("此类型已存在,请勿重复添加")
+      }
     },
     // 修改、保存
     saveGameType(index, id, name) {
@@ -131,13 +144,12 @@ export default {
     gameTypeDelete(index, id) {
       this.$request.fetchDelGameType({ id: id }).then((res) => {
         if (res.data.code === 200) {
-          this.tableData.splice(index, 1)
+          this.tableData.splice(index, 1);
           this.$message.success("删除成功");
         } else {
           this.$message.error("删除失败");
         }
       });
-      console.log(index, row);
     },
     // 翻页
     handleSelectionChange(val) {
@@ -179,6 +191,16 @@ export default {
           this.searchPage.page = 1;
           this.getGameTypeList(this.searchPage);
         }
+      },
+    },
+    "name": {
+      handler(newVal) {
+        // 判重
+        this.tableData.forEach((item) => {
+          if (item.name === newVal) {
+            this.isRepetition = true;
+          }
+        });
       },
     },
   },

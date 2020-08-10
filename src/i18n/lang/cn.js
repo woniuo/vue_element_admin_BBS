@@ -60,8 +60,8 @@ const cn = {
     adList: "广告列表",
     systemManage: "系统管理", // 系统相关
     roleManage: "角色管理",
-    aUserManage: "用户管理",
-    aUserList: "用户列表"
+    aUserManage: "系统用户管理",
+    aUserList: "系统用户列表"
   },
   rightMenu: {
     close: "关闭",

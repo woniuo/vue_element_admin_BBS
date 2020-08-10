@@ -1,6 +1,6 @@
 /**
  * Created by WebStorm.
- * User: nirongxu
+ * User: woniuo
  * Date: 2020/4/20
  * Description: 文件描述
  */
@@ -13,29 +13,33 @@ export default {
   fetchRegister (data) {
     return axios.post(userUrls.register, data)
   },
-  // 删除用户
+  // 删除系统用户
   fetchDelUser (data) {
     return axios.post(userUrls.delUser, data)
   },
-  // 获取用户列表
+  // 获取系统用户列表
   fetchUserList (data) {
-    return axios.post(userUrls.userList, data)
+    return axios.get(userUrls.userList, {params: data})
   },
-  // 修改用户信息
+  // 修改系统用户信息
   fetchEditUser (data) {
     return axios.post(userUrls.editUser, data)
   },
-  // 获取当前用户信息
+  // 获取当前系统用户信息
   fetchGetUserInfo () {
     return axios.get(userUrls.getUserInfo)
   },
-  // 获取用户信息
+  // 获取系统用户信息
   fetchGetUserInfoId (data) {
-    return axios.post(userUrls.getUserInfoId, data)
+    return axios.get(userUrls.getUserInfoId, data)
   },
   // 修改密码
   fetchEditPassword (data) {
     return axios.post(userUrls.editPassword, data)
+  },
+  // 修改系统用户状态
+  fetchSetSystemUserStatus(data) {
+    return axios.post(userUrls.setSystemUserStatus, data)
   },
   // =====================用户相关==============
   // 获取用户列表
@@ -253,6 +257,31 @@ export default {
   // 删除游戏类型
   fetchDelGameType(data) {
     return axios.post(userUrls.delGameType, data)
+  },
+
+  // 获取礼包列表
+  fetchGetGiftBagList(data) {
+    return axios.get(userUrls.getGiftBagList, {params: data})
+  },
+  // 获取礼包详情
+  fetchGetGiftBag(data) {
+    return axios.get(userUrls.getGiftBag, {params: data})
+  },
+  // 新增礼包
+  fetchAddGiftBag(data) {
+    return axios.post(userUrls.addGiftBag, data)
+  },
+  // 修改礼包
+  fetchEditGiftBag(data) {
+    return axios.post(userUrls.editGiftBag, data)
+  },
+  // 修改礼包状态
+  fetchSetGiftBagStatus(data) {
+    return axios.post(userUrls.setGiftBagStatus, data)
+  },
+  // 删除礼包
+  fetchDelGiftBag(data) {
+    return axios.post(userUrls.delGiftBag, data)
   },
 
   // 获取积分配置

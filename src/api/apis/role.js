@@ -1,6 +1,6 @@
 /**
  * Created by WebStorm.
- * User: nirongxu
+ * User: woniuo
  * Date: 2020/4/20
  * Description: 文件描述
  */
@@ -10,7 +10,7 @@ import roleUrls from "../urls/role"
 export default {
   // 获取权限列表
   fetchGetRoleList () {
-    return axios.post(roleUrls.getRoleList)
+    return axios.get(roleUrls.getRoleList)
   },
   // 增加角色
   fetchAddRole (data) {

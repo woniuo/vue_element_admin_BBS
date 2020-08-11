@@ -63,7 +63,7 @@ export default {
         })
       }
     },
-    $route: {
+    "$route": {
       handler (newVal) {
         if (newVal.query.id) {
           this.idpath = '?id=' + newVal.query.id

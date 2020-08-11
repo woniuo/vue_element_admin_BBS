@@ -14,8 +14,8 @@
             </el-form>
           </el-col>
           <el-col :span="12" align="right" v-if="multipleSelection.length>0">
-            <el-button type="success" @click="setStatusAll(1)">批量审核通过</el-button>
-            <el-button type="primary" @click="setStatusAll(2)">批量审核不通过</el-button>
+            <el-button type="success" @click="setStatusAll(2)">批量审核通过</el-button>
+            <el-button type="primary" @click="setStatusAll(3)">批量审核不通过</el-button>
             <el-button type="danger" @click="delStatusAll">批量删除</el-button>
           </el-col>
         </el-row>
@@ -27,8 +27,7 @@
         :empty-text="emptyText"
       >
         <el-table-column type="selection" width="55"></el-table-column>
-        <el-table-column label="ID" width="60" align="center" prop="id" sortable>
-        </el-table-column>
+        <el-table-column label="ID" width="60" align="center" prop="id" sortable></el-table-column>
         <el-table-column label="举报人" align="center" width="200">
           <template slot-scope="scope">
             <div class="out-dot">{{ scope.row.nickname}}</div>
@@ -61,7 +60,7 @@
             >故事文章</el-tag>
             <el-tag
               type="info"
-              v-else-if="scope.row.itemType === 1 && scope.row.itemChildType === 2"
+              v-else-if="scope.row.itemType === 2 && scope.row.itemChildType === 2"
               disable-transitions
             >故事评论</el-tag>
             <el-tag
@@ -71,7 +70,7 @@
             >动态文章</el-tag>
             <el-tag
               type="info"
-              v-else-if="scope.row.itemType === 1 && scope.row.itemChildType === 2"
+              v-else-if="scope.row.itemType === 3 && scope.row.itemChildType === 2"
               disable-transitions
             >动态评论</el-tag>
           </template>
@@ -87,7 +86,12 @@
         >
           <template slot-scope="scope">
             <span>{{scope.row.type}}</span>
-            <el-button v-if="scope.row.resume" type="primary"  size="mini" @click="getReportText(scope.row.resume)">查看描述</el-button>
+            <el-button
+              v-if="scope.row.resume"
+              type="primary"
+              size="mini"
+              @click="getReportText(scope.row.resume)"
+            >查看描述</el-button>
           </template>
         </el-table-column>
         <el-table-column
@@ -203,11 +207,16 @@ export default {
   methods: {
     // 删除
     handleDelete(index, id) {
-      this.$request.fetchDelReport({ id: id }).then((res) => {
+      this.$request.fetchDelReport({ id: [id] }).then((res) => {
         if (res.data.code === 200) {
           // 移除索引对应的那条数据
           this.tableData.splice(index, 1);
           this.$message.success("删除成功");
+          // 防止当前数据删除完显示空的情况，当删除完最后一个时请求上一页数据
+          if (this.tableData.length === 0) {
+            this.searchPage.page--;
+            this.getList(this.searchPage);
+          }
         } else {
           this.$message.error("删除失败");
         }
@@ -215,23 +224,23 @@ export default {
     },
     // 被举报类型过滤
     filterbReport(value, row) {
-      if(value === 1) {
-        return row.itemType === 1 && row.itemChildType ===1
+      if (value === 1) {
+        return row.itemType === 1 && row.itemChildType === 1;
       }
-      if(value === 2) {
-        return row.itemType === 2 && row.itemChildType ===1
+      if (value === 2) {
+        return row.itemType === 2 && row.itemChildType === 1;
       }
-      if(value === 3) {
-        return row.itemType === 3 && row.itemChildType ===1
+      if (value === 3) {
+        return row.itemType === 3 && row.itemChildType === 1;
       }
-      if(value === 4) {
-        return row.itemType === 1 && row.itemChildType ===2
+      if (value === 4) {
+        return row.itemType === 1 && row.itemChildType === 2;
       }
-      if(value === 5) {
-        return row.itemType === 2 && row.itemChildType ===2
+      if (value === 5) {
+        return row.itemType === 2 && row.itemChildType === 2;
       }
-      if(value === 6) {
-        return row.itemType === 3 && row.itemChildType ===2
+      if (value === 6) {
+        return row.itemType === 3 && row.itemChildType === 2;
       }
     },
     // 举报类型过滤
@@ -244,7 +253,11 @@ export default {
     },
     // 全选操作
     handleSelectionChange(val) {
-      this.multipleSelection = val;
+      let arr = [];
+      val.forEach((item) => {
+        arr.push(item.id);
+      });
+      this.multipleSelection = arr;
     },
     // 分页
     handleSizeChange(val) {
@@ -264,7 +277,7 @@ export default {
       this.$request
         .fetchSetReportStatus({
           approvalResult: parseInt(this.radio),
-          id: id,
+          id: [id],
         })
         .then((res) => {
           if (res.data.code === 200) {
@@ -285,10 +298,22 @@ export default {
         type: "warning",
       })
         .then(() => {
-          this.$message({
-            type: "success",
-            message: "批量审核成功!",
-          });
+          this.$request
+            .fetchSetReportStatus({
+              approvalResult: parseInt(this.radio),
+              id: this.multipleSelection,
+            })
+            .then((res) => {
+              if (res.data.code === 200) {
+                this.getList(this.searchPage);
+                this.$message({
+                  type: "success",
+                  message: "操作成功!",
+                });
+              } else {
+                this.$message.error(res.data.msg);
+              }
+            });
         })
         .catch(() => {
           this.$message({
@@ -305,10 +330,18 @@ export default {
         type: "warning",
       })
         .then(() => {
-          this.$message({
-            type: "success",
-            message: "批量删除成功!",
-          });
+          this.$request
+            .fetchDelReport({ id: this.multipleSelection })
+            .then((res) => {
+              if (res.data.code === 200) {
+                this.$message({
+                  type: "success",
+                  message: "操作成功!",
+                });
+              } else {
+                this.$message.error("删除失败");
+              }
+            });
         })
         .catch(() => {
           this.$message({

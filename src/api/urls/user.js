@@ -162,6 +162,17 @@ export default {
    // 修改积分配置
    setIntegary: "/dailyTask/update",
 
+   // 获取签到扩展配置列表
+   getSignConfigList: "/signInExtend/list",
+   // 获取单个配置
+   getSignConfig: "/signInExtend/detail",
+   // 新增
+   addSignConfig: "/signInExtend/update",
+   // 修改
+   editSignConfig: "/signInExtend/update",
+   // 删除
+   delSignConfig: "/signInExtend/delete",
+
    // 获取头衔列表
    getGardTitleList: "/rank/getRankList",
    // 查看头衔

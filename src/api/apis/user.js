@@ -293,6 +293,27 @@ export default {
     return axios.post(userUrls.setIntegary, data)
   },
 
+  // 获取签到扩展配置列表
+  fetchGetSignConfigList(data) {
+    return axios.get(userUrls.getSignConfigList, {params: data})
+  },
+  // 获取单个配置
+  fetchGetSignConfig(data) {
+    return axios.get(userUrls.getSignConfig, {params: data})
+  },
+  // 新增
+  fetchAddSignConfig(data) {
+    return axios.post(userUrls.addSignConfig, data)
+  },
+  // 修改
+  fetchEditSignConfig(data) {
+    return axios.post(userUrls.editSignConfig, data)
+  },
+  // 删除
+  fetchDelSignConfig(data) {
+    return axios.post(userUrls.delSignConfig, data)
+  },
+  
   // 获取头衔列表
   fetchGetGardTitleList(data) {
     return axios.get(userUrls.getGardTitleList, {params: data})

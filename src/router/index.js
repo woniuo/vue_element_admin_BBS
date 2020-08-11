@@ -33,7 +33,7 @@ let defaultRouter = [
     children: []
   },
   {
-    path: "/",
+    path: "/index",
     iconCls: "fa fa-dashboard", // 图标样式class
     name: routeName.home,
     component: Layout,

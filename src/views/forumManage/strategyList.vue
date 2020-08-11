@@ -149,7 +149,7 @@ export default {
       multipleSelection: [], // 勾选
       emptyText: "加载中...",
       searchPage: {
-        // 翻页
+        isOfficial: 2,
         userId: "",
         page: 1,
         pageSize: 10,
@@ -162,7 +162,7 @@ export default {
   methods: {
     // 删除
     handleDelete(index, id) {
-      this.$request.fetchDelStrategy({ strategyId: id }).then((res) => {
+      this.$request.fetchDelStrategy({ strategyId: [id] }).then((res) => {
         if (res.data.code === 200) {
           // 移除索引对应的那条数据
           this.tableData.splice(index, 1);
@@ -187,7 +187,11 @@ export default {
     },
     // 全选操作
     handleSelectionChange(val) {
-      this.multipleSelection = val;
+      let arr = [];
+      val.forEach((item) => {
+        arr.push(item.id);
+      });
+      this.multipleSelection = arr;
     },
     // 分页
     handleSizeChange(val) {
@@ -207,7 +211,7 @@ export default {
       this.$request
         .fetchSetStrategyStatus({
           approvalResult: parseInt(this.radio),
-          id: id,
+          id: [id],
         })
         .then((res) => {
           if (res.data.code === 200) {
@@ -221,17 +225,29 @@ export default {
         });
     },
     // 批量修改状态
-    setStatusAll() {
+    setStatusAll(status) {
       this.$confirm("您勾选的确定全部审核通过吗?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       })
         .then(() => {
-          this.$message({
-            type: "success",
-            message: "批量审核成功!",
-          });
+          this.$request
+            .fetchSetStrategyStatus({
+              approvalResult: status,
+              id: this.multipleSelection,
+            })
+            .then((res) => {
+              if (res.data.code === 200) {
+                this.getList(this.searchPage);
+                this.$message({
+                  type: "success",
+                  message: "操作成功!",
+                });
+              } else {
+                this.$message.error(res.data.msg);
+              }
+            });
         })
         .catch(() => {
           this.$message({
@@ -247,9 +263,16 @@ export default {
         type: "warning",
       })
         .then(() => {
-          this.$message({
-            type: "success",
-            message: "批量删除成功!",
+          this.$request.fetchDelStrategy({ strategyId: this.multipleSelection }).then((res) => {
+            if (res.data.code === 200) {
+              this.getList(this.searchPage);
+              this.$message({
+                type: "success",
+                message: "批量删除成功!",
+              });
+            } else {
+              this.$message.error("删除失败");
+            }
           });
         })
         .catch(() => {

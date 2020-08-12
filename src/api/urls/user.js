@@ -157,6 +157,15 @@ export default {
    // 删除礼包
    delGiftBag: "/gift/delete",
 
+   // 获取物品列表
+   getGoodsList: "/giftProp/listGiftProp",
+   // 获取单个物品
+   getGoods: "/giftProp/listByGiftId",
+   // 新增物品
+   addGoods: "/giftProp/insertProp",
+   // 删除物品
+   delGoods: "/giftProp/deleteProp",
+
    // 获取积分配置
    getIntegrayList: "/dailyTask/list",
    // 修改积分配置

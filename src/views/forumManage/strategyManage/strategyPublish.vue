@@ -14,20 +14,16 @@
               <el-input v-model="ruleForm.title"></el-input>
             </el-form-item>
           </el-col>
-          <el-col :span="6">
-            <el-form-item label="所属游戏" prop="game">
-              <el-select v-model="ruleForm.game" placeholder="请选择所属游戏">
-                <el-option label="天湖十三浪" value="1"></el-option>
-                <el-option label="欢乐斗地主" value="2"></el-option>
+          <el-col :span="6" >
+            <el-form-item label="所属游戏" prop="gameId">
+              <el-select  v-model="ruleForm.gameId" placeholder="请选择所属游戏">
+                <template v-if="gameData && gameData.length>0">
+                  <el-option v-for="item in gameData" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                </template>
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="2">
-            <el-form-item label="是否置顶" prop="istop">
-              <el-switch v-model="ruleForm.istop"></el-switch>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
+          <el-col :span="6" align="right">
             <el-form-item>
               <el-button type="primary" @click="submitForm('ruleForm')">发 布</el-button>
               <el-button @click="resetForm('ruleForm')">重 置</el-button>
@@ -53,6 +49,24 @@
           ></el-input>
           <el-button v-else class="button-new-tag" size="small" @click="showInput">+ 标签</el-button>
         </el-form-item>
+        <el-form-item label="缩略图" prop="imgPaths">
+          <!-- 上传进度条 -->
+          <el-upload
+            class="avatar-uploader"
+            :action="apiUrl+'/upload/uploadFile'"
+            :show-file-list="false"
+            :on-success="handleAvatarSuccess"
+            :on-progress="uploadFileProcess"
+            :before-upload="beforeAvatarUpload"
+          >
+            <img v-if="ruleForm.imgPaths" :src="ruleForm.imgPaths" class="avatar" />
+            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+          </el-upload>
+          <span class="up-desc">说明: 上传图片大小不能超过20M</span>
+          <div v-if="progressFlag" class="progress-box">
+            <el-progress :percentage="progressPercent"></el-progress>
+          </div>
+        </el-form-item>
         <el-form-item label="攻略内容" prop="article">
           <div ref="editor"></div>
         </el-form-item>
@@ -67,15 +81,16 @@ export default {
   data() {
     return {
       editor: null, // 保存富文本实例化对象
-      // 标签
-      dynamicTags: [],
+       progressFlag: false, // 进度条是否显示
+      progressPercent: 0, // 进度条
+      dynamicTags: [], // 标签
       inputVisible: false,
       inputValue: "",
-      // 表达
+      gameData: [], // 所属游戏
       ruleForm: {
         title: "",
-        game: "",
-        istop: false,
+        gameId: null,
+        imgPaths: "",
         tag: [],
         article: "",
       },
@@ -92,6 +107,9 @@ export default {
         game: [
           { required: true, message: "请选择所属游戏", trigger: "change" },
         ],
+        imgPaths: [
+          { required: true, message: "请上传攻略缩略图", trigger: "change" },
+        ],
         article: [
           { required: true, message: "攻略内容不能为空", trigger: "blur" },
         ],
@@ -102,7 +120,7 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          alert("submit!");
+          console.log(this.ruleForm)
         } else {
           console.log("error submit!!");
           return false;
@@ -111,11 +129,45 @@ export default {
     },
     resetForm(formName) {
       this.$refs[formName].resetFields();
-      this.editor.txt.clear()
+      this.editor.txt.clear();
     },
     // 标签添加
     handleClose(tag) {
       this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
+    },
+    // 图片上传
+    handleAvatarSuccess(res, file) {
+      this.ruleForm.imgPaths = res.msg;
+      this.progressPercent = 100; // 防止图片上传成后进度条反应不过来
+      setTimeout(() => {
+        this.progressFlag = false;
+      }, 1000);
+    },
+    beforeAvatarUpload(file) {
+      this.progressFlag = false;
+      const isLt20M = file.size / 1024 / 1024 < 20;
+      if (
+        ["image/jpg", "image/png", "image/gif", "image/jpeg"].indexOf(
+          file.type
+        ) == -1
+      ) {
+        this.$message.error("上传图片只能是jpg|jpeg|png|gif格式!");
+        return false;
+      }
+      if (!isLt20M) {
+        this.$message.error("上传图片大小不能超过 20MB!");
+        return false;
+      }
+    },
+    uploadFileProcess(event, file, fileList) {
+      fileList.forEach((item) => {
+        console.log(item.percentage);
+        if (item.percentage === 100) {
+        } else {
+          this.progressFlag = true;
+          this.progressPercent = Math.abs(item.percentage.toFixed(0));
+        }
+      });
     },
     showInput() {
       this.inputVisible = true;
@@ -127,10 +179,10 @@ export default {
     handleInputConfirm() {
       let inputValue = this.inputValue;
       if (!inputValue && !inputValue.match(/^\s+$/)) {
-        this.$message.error('添加的标签不能为空') 
-        return
+        this.$message.error("添加的标签不能为空");
+        return;
       } else {
-          let istag = this.dynamicTags.some(function (item) {
+        let istag = this.dynamicTags.some(function (item) {
           // 先判断标签库中是否含有该标签,   有则不添加  反之添加
           return item == inputValue;
         });
@@ -144,6 +196,18 @@ export default {
       this.inputVisible = false;
       this.inputValue = "";
     },
+    // 获取所属游戏
+    getGameList() {
+      this.$request
+        .fetchGetGameList()
+        .then((res) => {
+          if (res.data.code === 200) {
+            this.gameData = res.data.data.list;
+          } else {
+            console.log("所属游戏获取失败");
+          }
+        });
+    },
   },
   mounted() {
     let id = this.$route.query.articleId;
@@ -154,6 +218,8 @@ export default {
     };
     editor.create();
     this.editor.$textContainerElem.css("height", "500px !important"); //设置高度
+    // 获取所属游戏
+    this.getGameList({ page: 1, pageSize: 50, gameName: "" })
   },
   watch: {
     //监听标签的长度,判断是否超出最大范围
@@ -184,5 +250,35 @@ export default {
   width: 90px;
   margin-left: 10px;
   vertical-align: bottom;
+}
+.avatar-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+  border-color: #409eff;
+}
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 148px;
+  height: 148px;
+  line-height: 148px;
+  text-align: center;
+}
+.avatar {
+  width: 148px;
+  height: 148px;
+  display: block;
+}
+.up-desc {
+  font-size: 14px;
+  color: #999999;
+}
+.progress-box {
+  width: 200px;
 }
 </style>

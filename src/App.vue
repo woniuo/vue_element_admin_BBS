@@ -74,4 +74,8 @@ a{
 .hide_up .el-upload--picture-card {
 	display: none;
 }
+// transfer 穿梭框
+.transfer .el-transfer-panel {
+  width: 600px;
+}
 </style>

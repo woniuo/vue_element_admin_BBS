@@ -39,7 +39,7 @@
         </el-table-column>
         <el-table-column label="作者" align="center" width="150" prop="nickname"></el-table-column>
         <el-table-column
-          prop="gameName"
+          prop="columnName"
           label="所属专栏"
           :filters="columnData"
           :filter-method="filterColumn"

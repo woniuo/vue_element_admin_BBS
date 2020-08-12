@@ -284,6 +284,23 @@ export default {
     return axios.post(userUrls.delGiftBag, data)
   },
 
+  // 获取物品列表
+  fetchGetGoodsList(data) {
+    return axios.get(userUrls.getGoodsList, {params: data})
+  },
+  // 获取单个物品
+  fetchGetGoods(data) {
+    return axios.get(userUrls.getGoods, {params: data})
+  },
+  // 新增物品
+  fetchAddGoods(data) {
+    return axios.post(userUrls.addGoods, data)
+  },
+  // 删除物品
+  fetchDelGoods(data) {
+    return axios.post(userUrls.delGoods, data)
+  },
+
   // 获取积分配置
   fetchGetIntegrayList(data) {
     return axios.get(userUrls.getIntegrayList, data)

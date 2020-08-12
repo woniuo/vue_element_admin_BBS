@@ -15,9 +15,7 @@
           </el-col>
           <el-col :span="12" align="right">
             <router-link to="/giftBagAdd">
-                <el-button type="primary">
-                    新增礼包
-                </el-button>
+              <el-button type="primary">新增礼包</el-button>
             </router-link>
           </el-col>
         </el-row>
@@ -26,25 +24,15 @@
         :data="tableData"
         style="width: 100%"
         :empty-text="emptyText"
+        @expand-change="expandChange"
       >
-       <el-table-column type="expand">
-      <template slot-scope="props">
-        <el-card>
-            <el-row>
-                <el-col :span="2">{{props.row.id}}</el-col>
-                <el-col :span="22">1111</el-col>
-            </el-row>
-            <el-row>
-                <el-col :span="2">{{props.row.id}}</el-col>
-                <el-col :span="22">1111</el-col>
-            </el-row>
-            <el-row>
-                <el-col :span="2">{{props.row.id}}</el-col>
-                <el-col :span="22">1111</el-col>
-            </el-row>
-        </el-card>
-      </template>
-    </el-table-column>
+        <el-table-column type="expand">
+          <template>
+            <el-card>
+              <tran-sfer ref="goods"></tran-sfer>
+            </el-card>
+          </template>
+        </el-table-column>
         <el-table-column label="ID" width="150" align="left">
           <template slot-scope="scope">
             <span style="margin-left: 10px">{{ scope.row.id }}</span>
@@ -52,17 +40,29 @@
         </el-table-column>
         <el-table-column label="礼包名称" align="center" width="250">
           <template slot-scope="scope">
-            <div class="out-dot">{{ scope.row.title}}</div>
+            <div class="out-dot">{{ scope.row.giftName}}</div>
           </template>
         </el-table-column>
-        <el-table-column label="所属游戏" width="150" prop="cmtCount" align="center" sortable></el-table-column>
-        <el-table-column label="总数量" width="150" prop="cmtCount" align="center"></el-table-column>
-        <el-table-column label="允许领取次数" width="150" prop="cmtCount" align="center"></el-table-column>
-        <el-table-column label="已领取数量" width="150" prop="cmtCount" align="center"></el-table-column>
+        <el-table-column
+          prop="gameName"
+          label="所属游戏"
+          :filters="columnData"
+          :filter-method="filterColumn"
+          filter-placement="bottom-end"
+          width="150"
+          align="center"
+        >
+          <template slot-scope="scope">
+            <el-tag type="success" disable-transitions>{{scope.row.gameName}}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="总数量" width="150" prop="giftTotal" align="center"></el-table-column>
+        <el-table-column label="允许领取次数" width="150" prop="limitUse" align="center"></el-table-column>
+        <el-table-column label="已领取数量" width="150" prop="getCount" align="center"></el-table-column>
         <el-table-column label="发布时间" width="200" prop="createTime" align="center" sortable></el-table-column>
         <el-table-column label="操作" align="center" width="350">
           <template slot-scope="scope">
-           <el-button size="mini" @click="lookNews(scope.row.id)">查看</el-button>
+            <el-button size="mini" @click="lookNews(scope.row.id)">查看</el-button>
             <el-button type="primary" size="mini" @click="editNews(scope.row.id)">编辑</el-button>
             <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row.id)">
               <i class="el-icon-delete"></i>删除
@@ -86,25 +86,30 @@
     </template>
     <!-- 公共查看/编辑 -->
     <template>
-      <el-dialog :title="tabTitle" :visible.sync="dialogVisible" width="40%" :before-close="handleClose">
-          <gift-bag></gift-bag>
+      <el-dialog
+        :title="tabTitle"
+        :visible.sync="dialogVisible"
+        width="40%"
+        :before-close="handleClose"
+      >
+        <gift-bag ref="giftBag" :isedit="isEdit"></gift-bag>
       </el-dialog>
     </template>
   </div>
 </template>
 <script>
-import giftBag from './common/giftBag'
+import giftBag from "./common/giftBag";
+import tranSfer from "../../components/transfer/transfer";
 export default {
   name: "giftBagList",
   components: {
-      giftBag
+    giftBag,
+    tranSfer,
   },
   data() {
     return {
-      radio: 1, // 审核状态
-      visibleList: [], // 初始化为一个空数组
       tableData: [],
-      multipleSelection: [], // 勾选
+      isEdit: false, // 是否为编辑状态
       emptyText: "加载中...",
       // 翻页
       searchPage: {
@@ -115,10 +120,22 @@ export default {
       totalCount: 0, // 总条数
       totalPage: 0, // 总页数
       dialogVisible: false,
-      tabTitle: ""
+      tabTitle: "",
+      columnData: [], //所属游戏
     };
   },
   methods: {
+    // table表格展开change事件
+    expandChange(row, expandedRows) {
+      // 展开时触发
+      if (expandedRows.length > 0) {
+        setTimeout(() => {
+          this.$refs.goods.getGiftBagGoods(row.id);
+        },50)
+      } else {
+        // 收起时触发
+      }
+    },
     handleClose(done) {
       this.$confirm("确认关闭？")
         .then((_) => {
@@ -129,25 +146,27 @@ export default {
     // 保存成功的回调
     closeCallBack() {
       // 关闭弹出框
-      this.dialogVisible = false
+      this.dialogVisible = false;
       // 刷新数据
-      this.getList(this.searchPage)
+      this.getList(this.searchPage);
     },
     // 查看礼包
     lookNews(id) {
-      this.tabTitle = "查看礼包"
-      this.dialogVisible = true
+      this.tabTitle = "查看礼包";
+      this.dialogVisible = true;
+      this.isEdit = false
       setTimeout(() => {
-        this.$refs.newsShow.getNews(true, id)
-      },0)
+        this.$refs.giftBag.getGiftBag(id);
+      }, 0);
     },
     // 编辑礼包
     editNews(id) {
-       this.tabTitle = "编辑礼包"
-      this.dialogVisible = true
+      this.tabTitle = "编辑礼包";
+      this.dialogVisible = true;
+      this.isEdit = true
       setTimeout(() => {
-        this.$refs.newsShow.getNews(false, id)
-      },0)
+        this.$refs.giftBag.getGiftBag(id);
+      }, 0);
     },
     // 删除
     handleDelete(index, id) {
@@ -166,10 +185,6 @@ export default {
         }
       });
     },
-    // 全选操作
-    handleSelectionChange(val) {
-      this.multipleSelection = val;
-    },
     // 分页
     handleSizeChange(val) {
       this.searchPage.pageSize = val;
@@ -183,33 +198,9 @@ export default {
     onSubmit() {
       this.getList(this.searchPage);
     },
-    delStatusAll() {
-      this.$confirm("您勾选的确定全部删除吗?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
-      })
-        .then(() => {
-          this.$message({
-            type: "success",
-            message: "批量删除成功!",
-          });
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消操作",
-          });
-        });
-    },
-    // 取消
-    cancelDelete(index) {
-      this.$set(this.visibleList, index, false);
-      this.radio = 1;
-    },
     // 获取列表
     getList(data) {
-      this.$request.fetchGetNewsList(data).then(res => {
+      this.$request.fetchGetGiftBagList(data).then((res) => {
         if (res.data.code === 200) {
           this.tableData = res.data.data.list;
           this.searchPage.page = res.data.data.currPage;
@@ -221,12 +212,33 @@ export default {
         this.emptyText = "暂无数据";
       });
     },
+    // 所属游戏过滤
+    filterColumn(value, row) {
+      return row.gameName === value;
+    },
+    // 获取所属游戏
+    getColumn(data) {
+      this.$request.fetchGetGameList(data).then((res) => {
+        if (res.data.code === 200) {
+          res.data.data.list.forEach((item) => {
+            let columnArr = {
+              text: "",
+              value: "",
+            };
+            columnArr.text = item.name;
+            columnArr.value = item.name;
+            this.columnData.push(columnArr);
+          });
+        }
+      });
+    },
   },
   mounted() {
     this.getList(this.searchPage);
+    this.getColumn({page: 1, pageSize: 50, gameName: ""}); // 获取所属游戏
   },
   watch: {
-    "searchPage.title": {
+    "searchPage.giftName": {
       handler(newVal) {
         if (newVal.length === 0) {
           this.searchPage.page = 1;

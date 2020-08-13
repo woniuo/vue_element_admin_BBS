@@ -275,12 +275,6 @@ export default {
       deep: true,
     },
   },
-  beforeRouteLeave(to, from, next) {
-    console.log("sss");
-    console.log(to);
-    console.log(from);
-    console.log(next);
-  },
 };
 </script>
 <style lang="scss" scoped>

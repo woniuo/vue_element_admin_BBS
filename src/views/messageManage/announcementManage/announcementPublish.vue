@@ -5,13 +5,13 @@
         <el-form-item label="标题" prop="title">
           <el-row :span="24">
             <el-col :span="12">
-              <el-input v-model="ruleForm.title"></el-input>
+              <el-input v-model="ruleForm.title" minlength="1" maxlength="20" show-word-limit></el-input>
             </el-col>
             <el-col :span="12">
               <el-row :span="24">
                 <el-col :span="10">
-                  <el-form-item  label="接收对象" prop="radio">
-                    <el-radio-group v-model="ruleForm.radio">
+                  <el-form-item  label="接收对象" prop="isAll">
+                    <el-radio-group v-model="ruleForm.isAll">
                       <el-radio :label="1">所有人</el-radio>
                       <el-radio :label="2" @change="getUserList">自定义</el-radio>
                     </el-radio-group>
@@ -35,11 +35,11 @@
             </el-col>
           </el-row>
         </el-form-item>
-        <el-form-item label="简介" prop="synopsis">
+        <el-form-item label="简介" prop="resume">
           <el-input
             type="textarea"
             placeholder="请输入内容"
-            v-model="ruleForm.synopsis"
+            v-model="ruleForm.resume"
             maxlength="200"
             show-word-limit
           ></el-input>
@@ -54,7 +54,7 @@
             :on-progress="uploadFileProcess"
             :before-upload="beforeAvatarUpload"
           >
-            <img v-if="ruleForm.imageUrl" :src="ruleForm.imageUrl" class="avatar" />
+            <img v-if="ruleForm.imgUrl" :src="ruleForm.imgUrl" class="avatar" />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
           <span class="up-desc">说明: 上传图片大小不能超过20M</span>
@@ -131,11 +131,11 @@ export default {
       totalPage: 0, // 总页数
       ruleForm: {
         title: "", // 标题
-        synopsis: "", // 简介
-        imageUrl: "", // 缩略图
+        resume: "", // 简介
+        imgUrl: "", // 缩略图
         content: "", // 主体内容
-        receiveObj: [], // 接收对象
-        radio: 1, // 是否选择所有人接收
+        userIds: [], // 接收对象id
+        isAll: 1, // 是否选择所有人接收
         status: true // 状态
       },
       rules: {
@@ -143,16 +143,25 @@ export default {
           { required: true, message: "请输入发布标题", trigger: "blur" },
           { max: 20, message: "标题长度不能超过20个字符串", trigger: "blur" },
         ],
-        radio: [{ required: true, message: "接收人必须勾选" }],
+        isAll: [{ required: true, message: "接收人必须勾选" }],
         status: [{ required: true, message: "状态必须勾选"}]
       },
     };
   },
   methods: {
     submitForm(formName) {
+      // 状态转变
+      this.ruleForm.status = this.ruleForm.status?1:2
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          alert("submit!");
+          this.$request.fetchAddNotice(this.ruleForm).then( res => {
+            if (res.data.code === 200) {
+              this.$message.success("发布成功")
+              this.resetForm(formName)
+            } else {
+              this.$message.error("发布失败")
+            }
+          })
         } else {
           console.log("error submit!!");
           return false;
@@ -161,10 +170,11 @@ export default {
     },
     resetForm(formName) {
       this.$refs[formName].resetFields();
+      this.ruleForm.imgUrl = ""
       this.editor.txt.clear();
     },
     handleAvatarSuccess(res, file) {
-      this.ruleForm.imageUrl = res.msg;
+      this.ruleForm.imgUrl = res.msg;
       this.progressPercent = 100; // 防止图片上传成后进度条反应不过来
       setTimeout(() => {
         this.progressFlag = false;
@@ -224,11 +234,10 @@ export default {
     },
     // 将用户id提取出来
     getUserIdArr() {
-      let userArr = [];
       this.multipleSelection.forEach((item) => {
-        userArr.push(item.id);
+        this.ruleForm.userIds.push(item.id);
       });
-      console.log(userArr);
+      this.dialogTableVisible = false
     },
     // 用户查询
     onSubmit() {
@@ -254,7 +263,7 @@ export default {
     //自定义文件名
     editor.customConfig.uploadFileName = "file";
     editor.customConfig.onchange = (html) => {
-      this.ruleForm.article = html;
+      this.ruleForm.content = html;
     };
     editor.create();
     this.editor.$textContainerElem.css("height", "500px !important"); //设置高度yo

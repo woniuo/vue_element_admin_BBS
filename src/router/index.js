@@ -347,6 +347,16 @@ let addRouter = [
         children: []
       },
       {
+        r_id: 10301,
+        r_name: roleName.giftBagEdit, // 新增礼包
+        path: "/giftBagEdit",
+        iconCls: "fa iconfont icon-xinzeng",
+        name: "giftBagEdit",
+        component: () => import("@/views/giftBagManage/giftBagEdit"),
+        hidden: true,
+        children: []
+      },
+      {
         r_id: 1031,
         r_name: roleName.giftBagList, // 礼包列表
         path: "/giftBagList",

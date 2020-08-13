@@ -4,17 +4,23 @@
       :model="ruleForm"
       :rules="rules"
       ref="ruleForm"
-      label-width="100px"
+      label-width="120px"
       class="demo-ruleForm"
     >
       <el-form-item label="礼包名称" prop="giftName">
         <el-col :span="12">
-          <el-input v-model="ruleForm.giftName" :disabled="!isedit"></el-input>
+          <el-input
+            v-model="ruleForm.giftName"
+            :disabled="islook"
+            minlength="1"
+            maxlength="15"
+            show-word-limit
+          ></el-input>
         </el-col>
       </el-form-item>
       <el-form-item label="所属游戏" prop="gameId">
         <template v-if="gameList && gameList.length>0">
-          <el-select v-model="ruleForm.gameId" placeholder="请选择所属游戏" :disabled="!isedit">
+          <el-select v-model="ruleForm.gameId" placeholder="请选择所属游戏" :disabled="islook">
             <el-option v-for="item in gameList" :key="item.id" :label="item.name" :value="item.id"></el-option>
           </el-select>
         </template>
@@ -24,11 +30,11 @@
           <el-form-item label="礼包总数" prop="giftTotal">
             <el-input-number
               v-model="ruleForm.giftTotal"
-              :min="0"
+              :min="1"
               :max="1000000"
               :precision="0"
               label="礼包总数"
-              :disabled="!isedit"
+              :disabled="islook"
             ></el-input-number>
           </el-form-item>
         </el-col>
@@ -40,7 +46,7 @@
               :max="1000000"
               :precision="0"
               label="已领取数"
-              :disabled="!isedit"
+              :disabled="islook"
             ></el-input-number>
           </el-form-item>
         </el-col>
@@ -54,7 +60,7 @@
               :max="1000000"
               :precision="0"
               label="最高领取次数"
-              :disabled="!isedit"
+              :disabled="islook"
             ></el-input-number>
           </el-form-item>
         </el-col>
@@ -66,7 +72,7 @@
               :max="1000000"
               :precision="0"
               label="消耗积分"
-              :disabled="!isedit"
+              :disabled="islook"
             ></el-input-number>
           </el-form-item>
         </el-col>
@@ -78,7 +84,7 @@
           v-model="ruleForm.giftDescribe"
           maxlength="150"
           show-word-limit
-          :disabled="!isedit"
+          :disabled="islook"
         ></el-input>
       </el-form-item>
       <el-form-item label="礼包封面" prop="cover">
@@ -90,7 +96,7 @@
           :on-success="handleAvatarSuccess"
           :on-progress="uploadFileProcess"
           :before-upload="beforeAvatarUpload"
-          :disabled="!isedit"
+          :disabled="islook"
         >
           <img v-if="ruleForm.cover" :src="ruleForm.cover" class="avatar" />
           <i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -100,8 +106,9 @@
           <el-progress :percentage="progressPercent"></el-progress>
         </div>
       </el-form-item>
-      <el-form-item v-if="isedit">
-        <el-button type="primary" @click="submitForm('ruleForm')">保 存</el-button>
+      <el-form-item v-if="!islook">
+        <el-button type="primary" @click="submitForm('ruleForm')" v-if="!isedit">新 增</el-button>
+        <el-button type="primary" @click="submitForm('ruleForm')" v-else>保 存</el-button>
         <el-button @click="resetForm('ruleForm')">重置</el-button>
       </el-form-item>
     </el-form>
@@ -111,6 +118,10 @@
 export default {
   name: "giftBag",
   props: {
+    islook: {
+      type: Boolean,
+      default: false,
+    },
     isedit: {
       type: Boolean,
       default: false,
@@ -188,7 +199,11 @@ export default {
         if (valid) {
           this.$request.fetchEditGiftBag(this.ruleForm).then((res) => {
             if (res.data.code === 200) {
-              this.$message.success("保存成功");
+              // 新增清除表单
+              if (!this.isedit) {
+                this.resetForm(formName)
+              }
+              this.isedit? this.$message.success("保存成功") : this.$message.success("新增成功");
             } else {
               this.$message.error("保存失败");
             }
@@ -234,14 +249,57 @@ export default {
         }
       });
     },
+    // 获取礼包详情
     getGiftBag(id) {
+      console.log(id);
       this.$request.fetchGetGiftBag({ id: id }).then((res) => {
         if (res.data.code === 200) {
           this.ruleForm = res.data.data;
+        } else if (res.data.code === 500) {
+          // 返回上一级
+          this.$router.go(-1);
         } else {
           this.$message.error("数据获取失败");
         }
       });
+    },
+    // 编辑
+    getGiftBagEdit(id) {
+      if (this.isedit || this.islook) {
+        this.getGiftBag(id);
+      }
+    },
+    // 获取所属游戏
+    getGameData(data) {
+      this.$request.fetchGetGameList(data).then((res) => {
+        if (res.data.code === 200) {
+          res.data.data.list.forEach((item) => {
+            let columnArr = {
+              text: "",
+              value: "",
+            };
+            columnArr.id = item.id;
+            columnArr.name = item.name;
+            this.gameList.push(columnArr);
+          });
+        }
+      });
+    },
+  },
+  mounted() {
+    if (this.isedit) {
+      this.getGiftBag(this.$route.query.id);
+    }
+    this.getGameData({ page: 1, pageSize: 50, gameName: "" }); // 获取所属游戏
+  },
+  watch: {
+    "$route": {
+      handler(newVal) {
+        if (newVal) {
+          this.getGiftBagEdit(this.$route.query.id);
+        }
+      },
+      deep: true,
     },
   },
 };

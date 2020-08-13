@@ -269,7 +269,7 @@ export default {
         type: "warning",
       })
         .then(() => {
-          this.$request.fetchDelStory({ id: this.multipleSelection }).then((res) => {
+          this.$request.fetchDelStory({ storyId: this.multipleSelection }).then((res) => {
             if (res.data.code === 200) {
               this.getList(this.searchPage);
               this.$message({

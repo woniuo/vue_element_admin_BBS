@@ -25,11 +25,13 @@
         style="width: 100%"
         :empty-text="emptyText"
         @expand-change="expandChange"
+        :expand-row-keys="expands"
+        :row-key="getRowKeys"
       >
         <el-table-column type="expand">
           <template>
             <el-card>
-              <tran-sfer ref="goods"></tran-sfer>
+              <gift-bag-goods ref="goods"></gift-bag-goods>
             </el-card>
           </template>
         </el-table-column>
@@ -62,10 +64,14 @@
         <el-table-column label="发布时间" width="200" prop="createTime" align="center" sortable></el-table-column>
         <el-table-column label="操作" align="center" width="350">
           <template slot-scope="scope">
-            <el-button size="mini" @click="lookNews(scope.row.id)">查看</el-button>
-            <el-button type="primary" size="mini" @click="editNews(scope.row.id)">编辑</el-button>
+            <el-button size="mini" @click="lookGiftBag(scope.row.id)">查 看</el-button>
+            <router-link :to="{name: 'giftBagEdit', query: {id:scope.row.id}}">
+              <el-button type="primary" size="mini" @click="editGiftBag()">
+                <i class="el-icon-edit"></i>编 辑
+              </el-button>
+            </router-link>
             <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row.id)">
-              <i class="el-icon-delete"></i>删除
+              <i class="el-icon-delete"></i>删 除
             </el-button>
           </template>
         </el-table-column>
@@ -84,31 +90,32 @@
         ></el-pagination>
       </el-card>
     </template>
-    <!-- 公共查看/编辑 -->
+    <!-- 公共查看 -->
     <template>
       <el-dialog
         :title="tabTitle"
         :visible.sync="dialogVisible"
-        width="40%"
+        width="750px"
         :before-close="handleClose"
       >
-        <gift-bag ref="giftBag" :isedit="isEdit"></gift-bag>
+        <gift-bag ref="giftBag" :islook="isLook"></gift-bag>
       </el-dialog>
     </template>
   </div>
 </template>
 <script>
 import giftBag from "./common/giftBag";
-import tranSfer from "../../components/transfer/transfer";
+import giftBagGoods from "./common/giftBagGoods";
 export default {
   name: "giftBagList",
   components: {
     giftBag,
-    tranSfer,
+    giftBagGoods,
   },
   data() {
     return {
       tableData: [],
+      isLook: false, // 是否为查看状态
       isEdit: false, // 是否为编辑状态
       emptyText: "加载中...",
       // 翻页
@@ -122,26 +129,32 @@ export default {
       dialogVisible: false,
       tabTitle: "",
       columnData: [], //所属游戏
+      //设置row-key只展示一行
+      expands: [], //只展开一行放入当前行id
     };
   },
   methods: {
+    getRowKeys(row) {
+      return row.id;
+    },
     // table表格展开change事件
     expandChange(row, expandedRows) {
       // 展开时触发
       if (expandedRows.length > 0) {
+        this.expands = [];
+        if (row) {
+          this.expands.push(row.id); //只展开当前行id
+        }
         setTimeout(() => {
           this.$refs.goods.getGiftBagGoods(row.id);
-        },50)
+        }, 50);
       } else {
         // 收起时触发
+        this.expands = [];
       }
     },
     handleClose(done) {
-      this.$confirm("确认关闭？")
-        .then((_) => {
-          done();
-        })
-        .catch((_) => {});
+      done();
     },
     // 保存成功的回调
     closeCallBack() {
@@ -151,22 +164,17 @@ export default {
       this.getList(this.searchPage);
     },
     // 查看礼包
-    lookNews(id) {
+    lookGiftBag(id) {
       this.tabTitle = "查看礼包";
       this.dialogVisible = true;
-      this.isEdit = false
+      this.isLook = true;
       setTimeout(() => {
         this.$refs.giftBag.getGiftBag(id);
-      }, 0);
+      }, 50);
     },
     // 编辑礼包
-    editNews(id) {
-      this.tabTitle = "编辑礼包";
-      this.dialogVisible = true;
-      this.isEdit = true
-      setTimeout(() => {
-        this.$refs.giftBag.getGiftBag(id);
-      }, 0);
+    editGiftBag(id) {
+      this.isEdit = true;
     },
     // 删除
     handleDelete(index, id) {
@@ -235,7 +243,7 @@ export default {
   },
   mounted() {
     this.getList(this.searchPage);
-    this.getColumn({page: 1, pageSize: 50, gameName: ""}); // 获取所属游戏
+    this.getColumn({ page: 1, pageSize: 50, gameName: "" }); // 获取所属游戏
   },
   watch: {
     "searchPage.giftName": {

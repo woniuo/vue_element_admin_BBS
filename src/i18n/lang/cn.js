@@ -43,6 +43,7 @@ const cn = {
     gameType: "游戏类型",
     giftBagManage: "礼包管理", // 礼包相关
     giftBagAdd: "新增礼包",
+    giftBagEdit: "编辑礼包",
     giftBagList: "礼包列表",
     gardManage: "等级管理", // 等级相关
     integralManage: "积分任务管理",

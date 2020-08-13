@@ -44,6 +44,7 @@ const en = {
     gameType: "gameType",
     giftBagManage: "giftBagManage", // 礼包相关
     giftBagAdd: "giftBagAdd",
+    giftBagEdit: "giftBagEdit",
     giftBagList: "giftBagList",
     gardManage: "gardManage", // 等级相关
     integralManage: "integralManage",

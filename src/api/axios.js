@@ -49,11 +49,11 @@ error => {
           message: "服务器睡着了,请联系管理员",
           type: "error"
         })
-        originalRequest._retry = true
-        Cookies.remove("access_token")
-        setTimeout(() => {
-          location.reload()
-        }, 3000)
+        // originalRequest._retry = true
+        // Cookies.remove("access_token")
+        // setTimeout(() => {
+        //   location.reload()
+        // }, 3000)
         return axios.request(originalRequest);
     }
   if (error.response.status === 404) {

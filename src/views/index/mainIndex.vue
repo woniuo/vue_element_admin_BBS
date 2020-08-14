@@ -5,7 +5,7 @@
         <div class="card kjfs">
           <p class="title"><i class="fa fa-th-large fa-lg"></i>快捷方式</p>
           <ul>
-            <li><router-link to="/strategyPublish" class="kjfs kjfs-bluee"><span><i class="el-icon-tickets fa-2x"></i></span><span>发布攻略</span></router-link></li>
+            <li><router-link to="/officialStrategyPublish" class="kjfs kjfs-bluee"><span><i class="el-icon-tickets fa-2x"></i></span><span>发布攻略</span></router-link></li>
             <li><router-link to="/newsPublish" class="kjfs kjfs-pinkk"><span><i class="fa iconfont icon-quanbuxinwen fa-2x"></i></span><span>发布新闻</span></router-link></li>
             <li><router-link to="/announcementPublish" class="kjfs kjfs-grennn"><span><i class="fa iconfont icon-lujing fa-2x"></i></span><span>发布公告</span></router-link></li>
           </ul>
@@ -19,13 +19,13 @@
       <el-col :span="8">
         <div class="card dbsx">
           <p class="title"><i class="fa fa-file-text-o"></i>待办事项</p>
-          <ul>
-            <li><router-link to="#"><span>待审评论</span><span class="num">66</span></router-link></li>
-            <li><router-link to="#"><span>待审帖子</span><span class="num">66</span></router-link></li>
-          </ul>
-          <ul>
-            <li><router-link to="#"><span>待看举报</span><span class="num">66</span></router-link></li>
-            <li><router-link to="#"><span>待看反馈</span><span class="num">66</span></router-link></li>
+          <ul class="hide-relative">
+              <div v-if="loading" class="hide-loading loading">
+                <span class="el-icon-loading big-loading"></span>
+              </div>
+             <li><router-link to="#" class="daiban tz"><span>待审帖子</span><span class="num">{{toDoData.invitation}}</span></router-link></li>
+            <li><router-link to="#" class="daiban jb"><span>待看举报</span><span class="num">{{toDoData.report}}</span></router-link></li>
+            <li><router-link to="#" class="daiban fk"><span>待看反馈</span><span class="num">{{toDoData.feedback}}</span></router-link></li>
           </ul>
         </div>
       </el-col>
@@ -56,12 +56,23 @@
 
 <script>
 import LineEcharts from "../../components/ECharts/lineEcharts"
-import Maintable from "../table/maintable"
+import Maintable from "./common/maintable"
 export default {
   name: "mainIndex",
+  data () {
+    return {
+      toDoData: {
+         feedback: 0, // 待看反馈
+         invitation: 0 , // 待审帖子
+         report: 0 // 待看举报
+      },
+      loading: false
+    }
+  },
   components: {Maintable, LineEcharts},
   mounted () {
     this.selfAdaption()
+    this.getMainToDo()
   },
   methods: {
     // echart自适应
@@ -74,6 +85,18 @@ export default {
           }
         }
       }, 10)
+    },
+    // 获取代办数据
+    getMainToDo () {
+      this.loading = true
+      this.$request.fetchGetMainToDo().then( res => {
+        if (res.data.code === 200) {
+          this.toDoData  = res.data.data
+        } else {
+          this.$message.error("代办事项数据加载失败")
+        }
+        this.loading = false
+      })
     }
   }
 }
@@ -137,6 +160,26 @@ export default {
             margin: 0px;
           }
         }
+        .daiban {
+          padding: 84px 0px;
+        }
+         &:hover {
+            .tz {
+              background: #dbc09b;
+              color: #ffffff;
+            }
+            .num {
+              color: #ffffff;
+            }
+            .jb {
+              background: #dbc09b;
+              color: #ffffff;
+            }
+            .fk {
+              background: #dbc09b;
+              color: #ffffff;
+            }
+          }
         .kjfs-bluee{
           color: $bluee;
         }

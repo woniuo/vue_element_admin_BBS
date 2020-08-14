@@ -67,6 +67,9 @@ a{
   height: 100%;
   z-index: 99999;
 }
+.big-loading {
+  font-size: 28px;
+}
 .hide-relative {
   position: relative;
 }

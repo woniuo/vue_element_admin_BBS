@@ -5,6 +5,7 @@
         border
         :data="tableData"
         style="width: 100%"
+        :empty-text="emptyText"
         >
         <el-table-column
           type="index"
@@ -23,25 +24,28 @@
           align="center">
         </el-table-column>
         <el-table-column
-          prop="name"
+          prop="nickname"
           label="作者昵称"
           align="center">
         </el-table-column>
         <el-table-column
-          prop="status"
+          prop="approvalStatus"
           label="发帖状态"
           width="130"
           align="center">
+          <template slot-scope="scope">
+            <el-tag v-if="scope.row.approvalStatus == 1" type="info"> 未审批</el-tag>
+          </template>
         </el-table-column>
         <el-table-column
-          prop="date"
+          prop="createTime"
           label="发布时间"
           sortable
           align="center"
         >
          <template slot-scope="scope">
           <i class="el-icon-time"></i>
-          <span style="margin-left: 10px">{{ scope.row.date }}</span>
+          <span style="margin-left: 10px">{{ scope.row.createTime }}</span>
          </template>
         </el-table-column>
         <el-table-column
@@ -54,14 +58,14 @@
           align="center">
           <template slot-scope="scope">
                <el-tag
-              v-if="scope.row.tag === '玩家攻略'"
-              disable-transitions>{{scope.row.tag}}</el-tag>
+              v-if="scope.row.type === 1"
+              disable-transitions>玩家攻略</el-tag>
               <el-tag
-              v-else-if="scope.row.tag === '心情故事'" type="success"
-              disable-transitions>{{scope.row.tag}}</el-tag>
+              v-else-if="scope.row.tag === 2" type="success"
+              disable-transitions>心情故事</el-tag>
                <el-tag
                v-else type="warning"
-              disable-transitions>{{scope.row.tag}}</el-tag>
+              disable-transitions>玩家动态</el-tag>
           </template>
         </el-table-column>
         <el-table-column label="操作" align="center">
@@ -118,77 +122,8 @@ export default {
     return {
       radio: '1', // 状态
       visibleList: [], // 初始化为一个空数组
-      tableData: [{
-        id: "201801012345601",
-        name: "王小虎",
-        status: "待审核",
-        title: "玩家攻略",
-        date: "2018-01-01",
-        tag: "玩家攻略"
-      }, {
-        id: "201801012345602",
-        name: "王小虎",
-        status: "待审核",
-        title: "玩家动态",
-        date: "2018-01-02",
-        tag: "玩家动态"
-      }, {
-        id: "201801012345603",
-        name: "王小虎",
-        status: "待审核",
-        title: "心情故事",
-        date: "2018-01-03",
-        tag: "心情故事"
-      }, {
-        id: "201801012345604",
-        name: "王小虎",
-        status: "待审核",
-        title: "心情故事",
-        date: "2018-01-03",
-        tag: "心情故事"
-      }, {
-        id: "201801012345605",
-        name: "王小虎",
-        status: "待审核",
-        title: "玩家动态",
-        date: "2018-01-04",
-        tag: "玩家动态"
-      }, {
-        id: "201801012345606",
-        name: "王小虎",
-        status: "待审核",
-        title: "玩家动态",
-        date: "2018-01-04",
-        tag: "玩家动态"
-      }, {
-        id: "201801012345607",
-        name: "王小虎",
-        status: "待审核",
-        title: "玩家攻略",
-        date: "2018-01-04",
-        tag: "玩家攻略"
-      }, {
-        id: "201801012345608",
-        name: "王小虎",
-        status: "待审核",
-        title: "玩家攻略",
-        date: "2018-01-04",
-        tag: "玩家攻略"
-      }, {
-        id: "201801012345609",
-        name: "王小虎",
-        status: "待审核",
-        title: "玩家动态",
-        date: "2018-01-05",
-        tag: "玩家动态"
-      }, {
-        id: "201801012345610",
-        name: "王小虎",
-        status: "待审核",
-        title: "心情故事",
-        date: "2018-01-05",
-        tag: "心情故事"
-      }]
+      emptyText: "加载中...",
+      tableData: []
     }
   },
   methods: {
@@ -230,7 +165,21 @@ export default {
     },
     filterTag (value, row) {
       return row.tag === value
+    },
+    // 获取待审数据
+    getPendingData () {
+      this.$request.fetchGetMainPending().then( res => {
+        if (res.data.code === 200) {
+          this.tableData = res.data.data
+        } else {
+          this.$message.error("最新待审数据加载失败")
+        }
+        this.emptyText= "暂无数据"
+      })
     }
+  },
+  mounted () {
+    this.getPendingData()
   }
 }
 </script>

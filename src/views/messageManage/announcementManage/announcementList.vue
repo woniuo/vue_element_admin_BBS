@@ -42,51 +42,27 @@
         <el-table-column label="发布时间" width="250" prop="createTime" align="center" sortable></el-table-column>
         <el-table-column
           label="公告状态"
-          :filters="[{ text: '启用', value: 1 }, { text: '禁用', value: 2 }]"
+          :filters="[{ text: '启用', value: true }, { text: '禁用', value: false }]"
           :filter-method="filterStatus"
           filter-placement="bottom-end"
           width="150"
           align="center"
         >
           <template slot-scope="scope">
-            <el-tag type="success" v-if="scope.row.status === 1">启用</el-tag>
-            <el-tag type="danger" v-else-if="scope.row.status === 2">禁用</el-tag>
+            <el-switch
+            v-model="scope.row.status"
+            @change="setStatus(scope.$index, scope.row.id, scope.row.status)"
+            active-color="#13ce66"
+            inactive-color="#ff4949">
+          </el-switch>
           </template>
         </el-table-column>
         <el-table-column label="操作" align="center" width="350">
           <template slot-scope="scope">
            <el-button size="mini" @click="lookNotice(scope.row.id)">查看公告</el-button>
-            <el-popover
-              placement="top"
-              width="150"
-              trigger="click"
-              v-model="visibleList[scope.$index]"
-            >
-              <template>
-                <el-row>
-                  <el-col :span="24">
-                    <el-radio-group v-model="radio">
-                      <el-radio :label="1">启用</el-radio>
-                      <el-radio :label="2">禁用</el-radio>
-                    </el-radio-group>
-                  </el-col>
-                </el-row>
-                <el-row class="mt10" justify="center">
-                  <el-col :span="12">
-                    <el-button size="mini" @click="cancelDelete(scope.$index)">取消</el-button>
-                  </el-col>
-                  <el-col :span="12">
-                    <el-button
-                      size="mini"
-                      type="primary"
-                      @click="setStatus(scope.$index, scope.row.id)"
-                    >确定</el-button>
-                  </el-col>
-                </el-row>
-              </template>
-              <el-button size="mini" slot="reference">状态修改</el-button>
-            </el-popover>
-            <el-button type="primary" size="mini" @click="editNotice(scope.row.id)">编辑</el-button>
+           <router-link :to="{name: 'announcementEdit', query: {id: scope.row.id}}">
+             <el-button type="primary" size="mini" >编辑</el-button>
+           </router-link>
             <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row.id)">
               <i class="el-icon-delete"></i>删除
             </el-button>
@@ -110,18 +86,18 @@
     <!-- 公共查看/编辑 -->
     <template>
       <el-dialog :title="tabTitle" :visible.sync="dialogVisible" width="75%" :before-close="handleClose">
-        <v-notice ref="noticeShow"></v-notice>
+        <announcement ref="noticeShow" :isedit="false"></announcement>
       </el-dialog>
     </template>
   </div>
 </template>
 
 <script>
-import notice from "../common/notice";
+import announcement from "./common/announcement";
 export default {
   name: "announcementList",
   components: {
-    vNotice: notice,
+    announcement
   },
   data() {
     return {
@@ -144,18 +120,14 @@ export default {
   },
   methods: {
     handleClose(done) {
-      this.$confirm("确认关闭？")
-        .then((_) => {
-          done();
-        })
-        .catch((_) => {});
+     done();
     },
     // 查看公告
     lookNotice(id) {
       this.tabTitle = "查看公告"
       this.dialogVisible = true
       setTimeout(() => {
-        this.$refs.noticeShow.getNotice(true, id)
+        this.$refs.noticeShow.getNotice(false, id)
       },0)
     },
     // 编辑公告
@@ -209,17 +181,15 @@ export default {
       this.getList(this.searchPage);
     },
     // 状态修改
-    setStatus(index, id) {
+    setStatus(index, id, status) {
       this.$request
         .fetchSetNoticeStatus({
-          approvalResult: parseInt(this.radio),
           id: id,
+          status: status
         })
         .then((res) => {
           if (res.data.code === 200) {
-            this.$set(this.tableData[index], "status", this.radio + 1);
-            this.$set(this.visibleList, index, false); // 隐藏
-            this.radio = 1; // 恢复初始值
+            this.tableData[index].status = status
             this.$message.success("修改成功");
           } else {
             this.$message.error(res.data.msg);

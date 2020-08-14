@@ -1,5 +1,8 @@
 <template>
-    <div>
+    <div class="hide-relative">
+      <div v-if="loading" class="hide-loading loading">
+          <span class="el-icon-loading big-loading"></span>
+        </div>
       <div :id="id" :style="{width: width, height: height}"></div>
     </div>
 </template>
@@ -24,14 +27,26 @@ export default {
   },
   data () {
     return {
-      chart: null
+      chart: null,
+      echartData: [
+        {
+          dayList: ['01','02','03','04','05','06','7'],
+          registerList: [0,0,0,0,0,0,0], // 注册初始数据
+          strategyList: [0,0,0,0,0,0,0], // 攻略初始数据
+          storyList: [0,0,0,0,0,0,0], // 故事初始数据
+          photoList: [0,0,0,0,0,0,0], // 动态初始数据
+          commentList: [0,0,0,0,0,0,0], // 评论初始数据
+        }
+      ], // 主表数据
+      loading: false
     }
   },
   mounted () {
-    this.initChart()
+    this.getLineEcharts()
   },
   methods: {
     initChart () {
+      let _this = this
       this.chart = this.$echarts.init(document.getElementById(this.id), "westeros")
 
       this.chart.setOption({
@@ -58,7 +73,7 @@ export default {
         xAxis: {
           type: "category",
           boundaryGap: false,
-          data: ["周一", "周二", "周三", "周四", "周五", "周六", "周日"]
+          data: _this.echartData.dayList
         },
         yAxis: {
           type: "value"
@@ -68,36 +83,49 @@ export default {
             name: "注册用户",
             type: "line",
             stack: "总量",
-            data: [82, 63, 50, 43, 34, 23, 11]
+            data: _this.echartData.registerList
           },
           {
             name: "玩家攻略",
             type: "line",
             stack: "总量",
-            data: [22, 38, 19, 23, 49, 33, 11]
+            data: _this.echartData.strategyList
           },
           {
             name: "心情故事",
             type: "line",
             stack: "总量",
-            data: [25, 43, 50, 25, 69, 53, 64]
+            data: _this.echartData.storyList
           },
           {
             name: "玩家动态",
             type: "line",
             stack: "总量",
-            data: [53, 73, 93, 63, 53, 43, 13]
+            data: _this.echartData.photoList
           },
           {
             name: "玩家评论",
             type: "line",
             stack: "总量",
-            data: [88, 19, 59, 73, 29, 33, 82]
+            data: _this.echartData.commentList
           }
         ]
       })
-    }
+    },
+    // 获取图表数据
+  getLineEcharts () {
+    this.loading = true
+    this.$request.fetchGetMainLineEcharts().then( res => {
+      if (res.data.code === 200) {
+          this.echartData = res.data.data
+      } else {
+        this.$messate.error("图形表数据加载失败")
+      }
+      this.initChart()
+      this.loading = false
+    })
   }
+  },
 }
 </script>
 

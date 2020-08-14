@@ -8,6 +8,18 @@ import axios from "../axios"
 import userUrls from "../urls/user"
 
 export default {
+  // 获取主页代办数据
+  fetchGetMainToDo (data) {
+    return axios.get(userUrls.getMainToDo, data)
+  },
+  // 获取主页图表数据
+  fetchGetMainLineEcharts (data) {
+    return axios.get(userUrls.getMainLineEcharts, data)
+  },
+  // 获取主页最新待审数据
+  fetchGetMainPending (data) {
+    return axios.get(userUrls.getMainPending, data)
+  },
   // ================管理员相关================
   // 注册/添加账号
   fetchRegister (data) {
@@ -72,6 +84,9 @@ export default {
     return axios.post(userUrls.delStrategy, data)
   },
   // 攻略发布
+  fetchAddStrategy (data) {
+    return axios.post(userUrls.addStrategy, data)
+  },
   // 获取故事列表
   fetchGetStoryList (data) {
     return axios.get(userUrls.getStoryList, {params: data})
@@ -418,5 +433,10 @@ export default {
   fetchDelAd(data) {
     return axios.post(userUrls.delAd, data)
   }, 
+
+  // 新增标签
+  fetchAddTag(data) {
+    return axios.post(userUrls.addTag, data)
+  }
 }
 

@@ -251,7 +251,6 @@ export default {
     },
     // 获取礼包详情
     getGiftBag(id) {
-      console.log(id);
       this.$request.fetchGetGiftBag({ id: id }).then((res) => {
         if (res.data.code === 200) {
           this.ruleForm = res.data.data;

@@ -1,12 +1,12 @@
 <template>
   <div>
-    <announcement :isadd="true"></announcement>
+    <announcement :isedit="true"></announcement>
   </div>
 </template>
 <script>
 import announcement from './common/announcement'
 export default {
-  name: "announcementPublish",
+  name: "announcementEdit",
   components: {
     announcement
   },

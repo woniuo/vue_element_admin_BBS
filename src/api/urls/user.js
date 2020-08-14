@@ -5,6 +5,12 @@
  * Description: 文件描述
  */
 export default {
+  // 获取主页代办数据
+  getMainToDo: "/mainPage/readyDo",
+  // 获取主页图表数据
+  getMainLineEcharts: "/mainPage/image",
+  // 获取主页最新待审数据
+  getMainPending: "/mainPage/approval",
   // ==============后台相关================
   // 注册/添加账号
   register: "/admin/user/register",
@@ -40,6 +46,7 @@ export default {
   // 攻略删除
   delStrategy: "/strategy/deleteStrategy",
   // 攻略发布
+  addStrategy: "/strategy/publicStrategy",
   
   // 获取故事列表
   getStoryList: "/story/getStoryList",
@@ -96,7 +103,7 @@ export default {
    // 获取公告详情
    getNotice: "/notice/detail",
    // 公告状态修改
-   setNoticeStatus: "",
+   setNoticeStatus: "/notice/forbidden",
    // 删除公告
    delNotice: "/notice/delete",
 
@@ -226,5 +233,8 @@ export default {
    // 修改广告
    setAd: "/advert/insert",
    // 删除广告
-   delAd: "/advert/delete"
+   delAd: "/advert/delete",
+
+   // 新增标签
+   addTag: "/label/insert"
 }

@@ -30,14 +30,14 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-form-item label="添加标签" prop="tag">
+        <el-form-item label="添加标签" prop="labelIds">
           <el-tag
-            :key="tag"
+            :key="tag.id"
             v-for="tag in dynamicTags"
             closable
             :disable-transitions="false"
             @close="handleClose(tag)"
-          >{{tag}}</el-tag>
+          >{{tag.name}}</el-tag>
           <el-input
             class="input-new-tag"
             v-if="inputVisible"
@@ -67,7 +67,17 @@
             <el-progress :percentage="progressPercent"></el-progress>
           </div>
         </el-form-item>
-        <el-form-item label="攻略内容" prop="article">
+        <el-form-item label="攻略简介" prop="resume">
+          <el-input
+          type="textarea"
+          :autosize="{ minRows: 2, maxRows: 4}"
+          maxlength="200"
+          show-word-limit
+          placeholder="请输入攻略简介"
+          v-model="ruleForm.resume">
+        </el-input>
+        </el-form-item>
+        <el-form-item label="攻略内容" prop="content">
           <div ref="editor"></div>
         </el-form-item>
       </el-form>
@@ -91,8 +101,9 @@ export default {
         title: "",
         gameId: null,
         imgPaths: "",
-        tag: [],
-        article: "",
+        labelIds: "",
+        resume: "",
+        content: "",
       },
       rules: {
         title: [
@@ -104,13 +115,13 @@ export default {
             trigger: "blur",
           },
         ],
-        game: [
+        gameId: [
           { required: true, message: "请选择所属游戏", trigger: "change" },
         ],
-        imgPaths: [
-          { required: true, message: "请上传攻略缩略图", trigger: "change" },
+        resume: [
+          { required: true, message: "请输入攻略简介", trigger: "blur" },
         ],
-        article: [
+        content: [
           { required: true, message: "攻略内容不能为空", trigger: "blur" },
         ],
       },
@@ -120,7 +131,14 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          console.log(this.ruleForm)
+          this.$request.fetchAddStrategy(this.ruleForm).then( res => {
+            if(res.data.code === 200) {
+              this.$message.success("发布成功")
+              this.resetForm(formName)
+            } else {
+              this.$message.error("发布失败")
+            }
+          })
         } else {
           console.log("error submit!!");
           return false;
@@ -131,7 +149,7 @@ export default {
       this.$refs[formName].resetFields();
       this.editor.txt.clear();
     },
-    // 标签添加
+    // 标签删除
     handleClose(tag) {
       this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
     },
@@ -161,7 +179,6 @@ export default {
     },
     uploadFileProcess(event, file, fileList) {
       fileList.forEach((item) => {
-        console.log(item.percentage);
         if (item.percentage === 100) {
         } else {
           this.progressFlag = true;
@@ -184,11 +201,25 @@ export default {
       } else {
         let istag = this.dynamicTags.some(function (item) {
           // 先判断标签库中是否含有该标签,   有则不添加  反之添加
-          return item == inputValue;
+          return item.name == inputValue;
         });
         if (!istag) {
-          // this.dynamicTags.push({ id: i, name: tag });
-          this.dynamicTags.push(inputValue);
+          this.$request.fetchAddTag({name: inputValue}).then( res => {
+            if(res.data.code === 200) {
+              this.dynamicTags.push({
+                id: res.data.data.id,
+                name: res.data.data.name
+              });
+              // 对标签进行处理
+              let labArr = []
+              this.dynamicTags.some(item => {
+                labArr.push(item.id)
+              })
+              this.ruleForm.labelIds = labArr.toString()
+            } else {
+              this.$message.error("添加失败")
+            }
+          })
         } else {
           this.$message.error("此标签已存在");
         }
@@ -214,7 +245,7 @@ export default {
     var editor = new E(this.$refs.editor);
     this.editor = editor;
     editor.customConfig.onchange = (html) => {
-      this.ruleForm.article = html;
+      this.ruleForm.content = html;
     };
     editor.create();
     this.editor.$textContainerElem.css("height", "500px !important"); //设置高度

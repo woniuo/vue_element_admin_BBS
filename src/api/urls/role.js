@@ -7,13 +7,20 @@
 export default {
   // 获取角色列表
   getRoleList: "/tbrole/getRoleList",
+  // 获取当前角色
+  getRole: "/tbrole/detailTbRole",
   // 增加角色
-  addRole: "/permissions/addRole",
+  addRole: "/tbrole/insertTbRole",
+  // 修改角色
+  editRole: "/tbrole/updateTbRole",
   // 删除角色
-  delRole: "/permissions/delRole",
+  delRole: "/tbrole/deleteTbRole",
   // 分配角色权限
-  rolePermissions: "/permissions/rolePermissions",
+  rolePermissions: "/tbrole/updateRolePermission",
   // 查询角色的所有权限
-  searchRolePermissions: "/permissions/searchRolePermissions"
+  searchRolePermissions: "/tbrole/rolePermission",
+
+  // 新增菜单按钮
+  addMenuButton: "/permission/insertPermission"
 }
 

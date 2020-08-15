@@ -8,13 +8,21 @@ import axios from "../axios"
 import roleUrls from "../urls/role"
 
 export default {
-  // 获取权限列表
+  // 获取角色列表
   fetchGetRoleList () {
     return axios.get(roleUrls.getRoleList)
+  },
+  // 获取角色信息
+  fetchGetRole(data) {
+    return axios.get(roleUrls.getRole, {params: data})
   },
   // 增加角色
   fetchAddRole (data) {
     return axios.post(roleUrls.addRole, data)
+  },
+  // 修改角色
+  fetchEditRole (data) {
+    return axios.post(roleUrls.editRole, data)
   },
   // 删除角色
   fetchDelRole (data) {
@@ -26,7 +34,12 @@ export default {
   },
   // 查询角色的所有权限
   fetchSearchRolePermissions (data) {
-    return axios.post(roleUrls.searchRolePermissions, data)
+    return axios.get(roleUrls.searchRolePermissions, {params: data})
+  },
+  
+  // 新增菜单按钮
+  fetchAddMenuButton(data) {
+    return axios.post(roleUrls.addMenuButton, data)
   }
 }
 

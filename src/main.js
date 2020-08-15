@@ -17,6 +17,7 @@ import "element-ui/lib/theme-chalk/index.css"
 import "./assets/iconfont/iconfont.css"
 import "font-awesome/css/font-awesome.css"
 import "@/router/permission"
+import "babel-polyfill"
 
 Vue.config.productionTip = false
 Vue.use(ElementUI)

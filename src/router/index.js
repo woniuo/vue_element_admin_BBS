@@ -73,12 +73,41 @@ let addRouter = [
         iconCls: "el-icon-edit-outline",
         name: "userList",
         component: () => import("@/views/user/userList"),
-        children: []
+        children: [
+          {
+            r_id: 80,
+            r_name: "btn:状态修改",
+            path: "",
+            type: "button",
+            children: []
+          },
+          {
+            r_id: 53,
+            r_name: "btn:查看",
+            path: "",
+            type: "button",
+            children: []
+          },
+          {
+            r_id: 54,
+            r_name: "btn:编辑",
+            path: "",
+            type: "button",
+            children: []
+          },
+          {
+            r_id: 55,
+            r_name: "btn:删除",
+            path: "",
+            type: "button",
+            children: []
+          }
+        ]
       }
     ]
   },
   {
-    r_id: 1003,
+    r_id:  12,
     r_name: roleName.forumManage, // 论坛管理
     path: "/forumManage",
     iconCls: "fa fa-comments",
@@ -86,7 +115,7 @@ let addRouter = [
     component: () => import("@/views/layout/layout"),
     children: [
       {
-        r_id: 1004,
+        r_id: 13,
         r_name: roleName.officialStrategyManage, // 官方攻略管理
         path: "/officialStrategyManage",
         iconCls: "iconfont icon-gonglve",
@@ -94,7 +123,7 @@ let addRouter = [
         component: () => import("@/views/forumManage/index"),
         children: [
           {
-            r_id: 1005,
+            r_id: 14,
             r_name: roleName.officialStrategyPublish, // 攻略发布
             path: "/officialStrategyPublish",
             iconCls: "iconfont icon-fabu",
@@ -103,7 +132,7 @@ let addRouter = [
             children: []
           },
           {
-            r_id: 1006,
+            r_id: 15,
             r_name: roleName.officialStrategyList, // 攻略列表
             path: "/officialStrategyList",
             iconCls: "el-icon-edit-outline",
@@ -114,7 +143,7 @@ let addRouter = [
         ]
       },
       {
-        r_id: 10061,
+        r_id: 16,
         r_name: roleName.strategyList, // 攻略列表
         path: "/strategyList",
         iconCls: "el-icon-edit-outline",
@@ -123,7 +152,7 @@ let addRouter = [
         children: []
       },
       {
-        r_id: 1007,
+        r_id: 17,
         r_name: roleName.storyList, // 故事列表
         path: "/storyList",
         iconCls: "el-icon-edit-outline",
@@ -132,7 +161,7 @@ let addRouter = [
         children: []
       },
       {
-        r_id: 1008,
+        r_id: 18,
         r_name: roleName.dynamicList, // 动态列表
         path: "/dynamicList",
         iconCls: "el-icon-edit-outline",
@@ -414,7 +443,7 @@ let addRouter = [
     component: () => import("@/views/layout/layout"),
     children: [
       {
-        r_id: 1035,
+        r_id: 1036,
         r_name: roleName.feedbackList, // 反馈列表
         path: "/feedbackList",
         iconCls: "el-icon-edit-outline",
@@ -480,7 +509,7 @@ let addRouter = [
     component: () => import("@/views/layout/layout"),
     children: [
       {
-        r_id: 1041,
+        r_id: 10410,
         r_name: roleName.adPublish, // 广告发布
         path: "/adPublish",
         iconCls: "fa iconfont icon-fabu",
@@ -499,7 +528,7 @@ let addRouter = [
         children: []
       },
       {
-        r_id: 1041,
+        r_id: 10412,
         r_name: roleName.adList, // 广告列表
         path: "/adList",
         iconCls: "el-icon-edit-outline",
@@ -536,7 +565,7 @@ let addRouter = [
       },
       {
         r_id: 1044,
-        r_name: roleName.userManage, // 用户管理
+        r_name: roleName.userManage, // 系统用户管理
         path: "/auser",
         iconCls: "el-icon-tickets",
         name: "userManage",
@@ -550,9 +579,18 @@ let addRouter = [
             name: "aUserList",
             component: () => import("@/views/systemManage/aUserList"),
             children: []
+          },
+          {
+            r_id: 111111,
+            r_name: roleName.addRole,
+            path: "/addRole",
+            iconCls: "el-icon-edit-outline",
+            name: "addRole",
+            component: () => import("@/views/systemManage/addRole"),
+            children: []
           }
         ]
-      }
+      },
     ]
   },
   {

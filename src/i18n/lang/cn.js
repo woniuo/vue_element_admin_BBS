@@ -62,7 +62,8 @@ const cn = {
     systemManage: "系统管理", // 系统相关
     roleManage: "角色管理",
     aUserManage: "系统用户管理",
-    aUserList: "系统用户列表"
+    aUserList: "系统用户列表",
+    addRole: "新增菜单"
   },
   rightMenu: {
     close: "关闭",

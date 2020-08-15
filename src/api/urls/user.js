@@ -13,11 +13,11 @@ export default {
   getMainPending: "/mainPage/approval",
   // ==============后台相关================
   // 注册/添加账号
-  register: "/admin/user/register",
+  register: "/tbuser/insertTbUser",
   // 删除系统用户
-  delUser: "/user/delUser",
+  delUser: "/tbuser/deleteTbUser",
   // 修改系统用户信息
-  editUser: "/user/editUserInfo",
+  editUser: "/tbuser/updateTbUser",
   // 获取当前系统用户信息
   getUserInfo: "/permission/getPermission",
   // 获取系统用户信息

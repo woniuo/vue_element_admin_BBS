@@ -93,7 +93,7 @@ export default {
       totalPage: 0, // 总页数
       dialogVisible: false,
       title: "",
-      userId: "",
+      userId: null,
     };
   },
   methods: {
@@ -122,7 +122,7 @@ export default {
     addUserFn() {
       this.dialogVisible = true;
       this.title = "添加账号";
-      this.userId = "";
+      this.userId = null;
     },
     handleEdit(index, row) {
       this.dialogVisible = true;

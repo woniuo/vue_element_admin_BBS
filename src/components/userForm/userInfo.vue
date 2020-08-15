@@ -10,8 +10,8 @@
       <el-form-item v-if="!userId" label="确认密码" prop="checkPass">
         <el-input type="password" v-model="ruleForm2.checkPass" autocomplete="off"></el-input>
       </el-form-item>
-      <el-form-item label="角色">
-        <el-select v-if="roleName" v-model="ruleForm2.role_id" disabled  placeholder="请选择等级">
+      <el-form-item label="角色" prop="roleId">
+        <el-select v-if="roleName" v-model="ruleForm2.roleId" disabled  placeholder="请选择等级">
           <el-option
             v-for="item in roleData"
             :key="item.id"
@@ -19,7 +19,7 @@
             :value="item.id">
           </el-option>
         </el-select>
-        <el-select v-else v-model="ruleForm2.role_id"  placeholder="请选择等级">
+        <el-select v-else v-model="ruleForm2.roleId"  placeholder="请选择等级">
           <el-option
             v-for="item in roleData"
             :key="item.id"
@@ -29,22 +29,26 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="手机号" prop="mobile_phone">
-        <el-input v-model="ruleForm2.mobile_phone" autocomplete="off"></el-input>
-      </el-form-item>
-      <el-form-item label="是否启用">
-        <el-switch v-model="ruleForm2.status"></el-switch>
+      <el-form-item label="手机号" prop="phone">
+        <el-input v-model="ruleForm2.phone" autocomplete="off"></el-input>
       </el-form-item>
       <el-form-item label="头像上传">
-        <el-upload
-          class="avatar-uploader"
-          action="/api/editor/uploadImg"
-          :show-file-list="false"
-          :on-success="handleAvatarSuccess"
-          :before-upload="beforeAvatarUpload">
-          <img v-if="ruleForm2.avatar" :src="ruleForm2.avatar" class="avatar">
-          <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-        </el-upload>
+        <!-- 上传进度条 -->
+          <el-upload
+            class="avatar-uploader"
+            :action="apiUrl+'/upload/uploadFile'"
+            :show-file-list="false"
+            :on-success="handleAvatarSuccess"
+            :on-progress="uploadFileProcess"
+            :before-upload="beforeAvatarUpload"
+          >
+            <img v-if="ruleForm2.avatar" :src="ruleForm.avatar" class="avatar" />
+            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+          </el-upload>
+          <span class="up-desc">说明: 上传图片大小不能超过20M</span>
+          <div v-if="progressFlag" class="progress-box">
+            <el-progress :percentage="progressPercent"></el-progress>
+          </div>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="submitForm('ruleForm2')">确 定</el-button>
@@ -68,8 +72,8 @@ export default {
       default: false
     },
     userId: {
-      type: String,
-      default: ""
+      type: Number,
+      default: null
     }
   },
   data () {
@@ -93,20 +97,19 @@ export default {
       }
     }
     return {
+      progressFlag: false, // 进度条是否显示
+      progressPercent: 0, // 进度条
       roleName: false,
-      roleData: "",
+      roleData: [],
       visible: this.dialogVisible,
       ruleForm2: {
-        mobile_phone: "",
-        username: "",
+        avatar: "",
+        email: "",
         password: "",
         checkPass: "",
-        role_id: "",
-        status: true,
-        sex: "1",
-        age: 0,
-        name: "",
-        avatar: ""
+        roleId: null,
+        phone: "",
+        username: ""
       },
       rules: {
         username: [
@@ -119,37 +122,20 @@ export default {
         checkPass: [
           {required: true, validator: validatePass2, trigger: "blur"}
         ],
-        role_id: [
+        roleId: [
           { required: true, message: "请选择用户角色", trigger: "change" }
         ]
       }
     }
   },
   methods: {
-    handleAvatarSuccess (res, file) {
-      this.ruleForm2.avatar = res.data[0]
-    },
     closeCallback () {
       this.$emit("successCallback")
-    },
-    beforeAvatarUpload (file) {
-      const isJPG = file.type === "image/jpeg"
-      const isPNG = file.type === "image/png"
-      const isLt2M = file.size / 1024 / 1024 < 2
-
-      if (!(isJPG || isPNG)) {
-        this.$message.error("上传头像图片只能是 JPG/PNG 格式!")
-      }
-      if (!isLt2M) {
-        this.$message.error("上传头像图片大小不能超过 2MB!")
-      }
-      // eslint-disable-next-line no-mixed-operators
-      return isLt2M && isJPG || isPNG
     },
     getList () {
       let that = this
       this.$request.fetchGetRoleList().then(function (response) {
-        that.roleData = response.data.rows
+        that.roleData = response.data.data
         let userId = that.userId
         if (!userId) {
           return false
@@ -201,6 +187,8 @@ export default {
               }
             }
           }
+          console.log(newData)
+          return
           fetchFn(newData).then((res) => {
             that.$message({
               showClose: true,
@@ -219,6 +207,39 @@ export default {
     },
     resetForm (formName) {
       this.$refs[formName].resetFields()
+    },
+    // 图片上传
+    handleAvatarSuccess(res, file) {
+      this.ruleForm2.avatar = res.msg;
+      this.progressPercent = 100; // 防止图片上传成后进度条反应不过来
+      setTimeout(() => {
+        this.progressFlag = false;
+      }, 1000);
+    },
+    beforeAvatarUpload(file) {
+      this.progressFlag = false;
+      const isLt20M = file.size / 1024 / 1024 < 20;
+      if (
+        ["image/jpg", "image/png", "image/gif", "image/jpeg"].indexOf(
+          file.type
+        ) == -1
+      ) {
+        this.$message.error("上传图片只能是jpg|jpeg|png|gif格式!");
+        return false;
+      }
+      if (!isLt20M) {
+        this.$message.error("上传图片大小不能超过 20MB!");
+        return false;
+      }
+    },
+    uploadFileProcess(event, file, fileList) {
+      fileList.forEach((item) => {
+        if (item.percentage === 100) {
+        } else {
+          this.progressFlag = true;
+          this.progressPercent = Math.abs(item.percentage.toFixed(0));
+        }
+      });
     }
   },
   mounted () {
@@ -240,26 +261,33 @@ export default {
     margin: 0px auto;
   }
   .avatar-uploader .el-upload {
-    border: 1px dashed #d9d9d9;
-    border-radius: 6px;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-  }
-  .avatar-uploader .el-upload:hover {
-    border-color: #409EFF;
-  }
-  .avatar-uploader-icon {
-    font-size: 28px;
-    color: #8c939d;
-    width: 178px;
-    height: 178px;
-    line-height: 178px;
-    text-align: center;
-  }
-  .avatar {
-    width: 178px;
-    height: 178px;
-    display: block;
-  }
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+  border-color: #409eff;
+}
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 148px;
+  height: 148px;
+  line-height: 148px;
+  text-align: center;
+}
+.avatar {
+  width: 148px;
+  height: 148px;
+  display: block;
+}
+.up-desc {
+  font-size: 14px;
+  color: #999999;
+}
+.progress-box {
+  width: 200px;
+}
 </style>

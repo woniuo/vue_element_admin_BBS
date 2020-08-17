@@ -43,7 +43,7 @@ export default {
   },
   // 获取系统用户信息
   fetchGetUserInfoId (data) {
-    return axios.get(userUrls.getUserInfoId, data)
+    return axios.get(userUrls.getUserInfoId, {params: data})
   },
   // 修改密码
   fetchEditPassword (data) {

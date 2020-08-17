@@ -52,7 +52,6 @@ const routerData = {
       let newRoleData = JSON.parse(JSON.stringify(addRouter))
       eachSelect(newRoleData, perRouter)
       commit("setRoleData", newRoleData)
-
       eachSelect(addRouter, perRouter, "setRouters")
       commit("setRouters", addRouter)
     }

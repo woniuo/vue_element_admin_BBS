@@ -18,7 +18,7 @@
             icon="el-icon-circle-plus-outline"
             @click="addUserFn"
             plain
-            v-role-btn="'39'"
+            v-role-btn="'106'"
           >添加账号</el-button>
         </el-col>
       </el-row>
@@ -37,7 +37,7 @@
           width="150"
         >
           <template slot-scope="scope">
-            <el-switch v-model="scope.row.userStatus" @change="setStatus($event, scope.row.id)"></el-switch>
+            <el-switch v-model="scope.row.userStatus" @change="setStatus($event, scope.row.id)" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
           </template>
         </el-table-column>
         <el-table-column prop="created" label="创建时间" align="center" width="200"></el-table-column>

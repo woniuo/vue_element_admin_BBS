@@ -82,7 +82,7 @@
         </el-table-column>
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
-            <el-button size="mini">
+            <el-button size="mini" v-role-btn="'62'">
               <el-link :href="httpUrl+'/gushi.html?id='+scope.row.id" target="_blank">查看</el-link>
             </el-button>
             <el-popover

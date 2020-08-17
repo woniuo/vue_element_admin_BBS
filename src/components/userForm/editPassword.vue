@@ -1,11 +1,9 @@
 <template>
   <el-dialog title="修改密码" width="580px" :visible.sync="visible" destroy-on-close @close="closeCallback">
-<!--    <div class="card">-->
-<!--      <p class="title"><i class="fa fa-th-large fa-lg"></i>修改密码</p>-->
       <el-form :model="ruleForm2" status-icon :rules="rules2" ref="ruleForm2" label-width="100px" class="demo-ruleForm">
-        <el-form-item label="原密码" prop="oldPassword">
+        <!-- <el-form-item label="原密码" prop="oldPassword">
           <el-input type="password" v-model="ruleForm2.oldPassword" autocomplete="off"></el-input>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="密码" prop="password">
           <el-input type="password" v-model="ruleForm2.password" autocomplete="off"></el-input>
         </el-form-item>
@@ -17,7 +15,6 @@
           <el-button @click="resetForm('ruleForm2')">重置</el-button>
         </el-form-item>
       </el-form>
-<!--    </div>-->
   </el-dialog>
 </template>
 
@@ -84,18 +81,17 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.$request.fetchEditPassword({
-            oldPassword: that.ruleForm2.oldPassword,
-            newPassword: that.ruleForm2.password
+            password: that.ruleForm2.password
           }).then((res) => {
-            that.$message({
-              showClose: true,
-              message: res.data.message,
-              type: "success"
-            })
-            setTimeout(function () {
-              Cookies.remove("access_token")
-              location.reload()
-            }, 3000)
+             if (res.data.code === 200) {
+              that.$message.success("修改成功")
+              setTimeout(function () {
+                Cookies.remove("access_token")
+                location.reload()
+              }, 3000)
+             } else {
+               that.$message.error("修改失败")
+             }
           }).catch((err) => {
             that.$message({
               showClose: true,

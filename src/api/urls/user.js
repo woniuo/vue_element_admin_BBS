@@ -21,11 +21,11 @@ export default {
   // 获取当前系统用户信息
   getUserInfo: "/permission/getPermission",
   // 获取系统用户信息
-  getUserInfoId: "/user/getUserInfoId",
+  getUserInfoId: "/tbuser/detailTbUser",
   // 获取系统用户列表
   userList: "/tbuser/getAllTbUser",
   // 修改密码
-  editPassword: "/user/editPassword",
+  editPassword: "/tbuser/updatePassword",
   // 修改系统用户状态
   setSystemUserStatus: "/tbuser/forbidden",
   // ============用户相关================

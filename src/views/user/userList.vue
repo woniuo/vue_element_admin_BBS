@@ -92,6 +92,7 @@
                   type="success"
                   close-transition
                   @click="setStatus(scope.row.id,1)"
+                  v-role-btn="'80'"
                 >启用</el-tag>
                 <el-tag v-else type="danger" close-transition @click="setStatus(scope.row.id,2)">禁用</el-tag>
               </div>
@@ -100,11 +101,11 @@
         </el-table-column>
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
-            <el-button size="mini" @click="lookUserInfo(scope.row.id)">查看</el-button>
-            <el-button size="mini" type="primary" @click="handleEdit(scope.$index, scope.row.id)">
+            <el-button size="mini" @click="lookUserInfo(scope.row.id)" v-role-btn="'53'">查看</el-button>
+            <el-button size="mini" type="primary" @click="handleEdit(scope.$index, scope.row.id)" v-role-btn="'54'">
               <i class="el-icon-edit"></i>编辑
             </el-button>
-            <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">
+            <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)" v-role-btn="'55'">
               <i class="el-icon-delete"></i>删除
             </el-button>
           </template>

@@ -7,7 +7,7 @@
         size="mini"
         @click="addRole"
         plain
-        v-role-btn="'39'"
+        v-role-btn="'106'"
       >新增</el-button>
     </div>
     <el-table :data="tableData" style="width: 100%">
@@ -26,17 +26,20 @@
             size="mini"
             :disabled="scope.row.name=='超级管理员'"
             @click="handleEdit(scope.$index, scope.row)"
+            v-role-btn="'107'"
           >编辑</el-button>
           <el-button
             size="mini"
             :disabled="scope.row.name=='超级管理员'"
             @click="roleEdit(scope.$index, scope.row)"
+            v-role-btn="'108'"
           >权限分配</el-button>
           <el-button
             size="mini"
             type="danger"
             :disabled="scope.row.name=='超级管理员'"
             @click="handleDelete(scope.$index, scope.row)"
+            v-role-btn="'109'"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -205,6 +208,10 @@ export default {
             if (!this.ruleForm.enname) {
               this.ruleForm.enname = this.randomWord(true, 5, 10)
             }
+            if (this.ruleForm.name === "超级管理员") {
+              this.$message.error("超级管理员只能有一个!")
+              return false
+            }
             this.$request.fetchAddRole(this.ruleForm).then( res => {
               if (res.data.code === 200) {
                 this.dialogFormVisible = false
@@ -243,18 +250,22 @@ export default {
       this.ruleForm.description = ""
     },
     rolePermissionSubmit() {
-      let that = this;
       let rolePermissionData = {
-        selectPermission: that.$refs.permission.getCheckedKeys(),
-        rid: that.selectRoleId,
+        permissionIds: this.$refs.permission.getCheckedKeys().toString(),
+        roleId: this.selectRoleId,
       };
       this.$request
         .fetchRolePermissions(rolePermissionData)
         .then((res) => {
-          that.$restBack(res.data, () => {
-            that.dialogFormVisible2 = false;
-            that.getList();
-          });
+          if (res.data.code === 200) {
+              this.$restBack(res.data, () => {
+              this.$message.success("修改成功")
+              this.dialogFormVisible2 = false;
+              this.getList();
+            });
+          } else {
+            this.$message.error("修改失败")
+          }
         })
         .catch((err) => {
           console.log(err);
@@ -270,10 +281,14 @@ export default {
       this.$request
         .fetchSearchRolePermissions({ roleId: this.selectRoleId })
         .then((res) => {
-          this.$refs.permission.setCheckedKeys([]);
-          let permissionData =
-            res.data.data.menuArr + "," + res.data.data.buttonArr;
-          this.$refs.permission.setCheckedKeys(permissionData.split(","));
+            if (res.data.code === 200) {
+              this.$refs.permission.setCheckedKeys([]);
+              let permissionData =
+                res.data.data.menuArr + "," + res.data.data.buttonArr;
+              this.$refs.permission.setCheckedKeys(permissionData.split(","));
+            } else {
+              this.$message.error("数据加载失败")
+            }
         });
     },
     handleDelete(index, row) {
@@ -344,7 +359,7 @@ export default {
   computed: {
     roleTree: function () {
       let roleData = this.$store.getters.roleData;
-      console.log(roleData);
+      console.log(roleData)
       for (let i = 0; i < roleData.length; i++) {
         if (roleData[i].redirect === "/404") {
           roleData.splice(i, 1);

@@ -32,7 +32,10 @@
       <el-form-item label="手机号" prop="phone">
         <el-input v-model="ruleForm2.phone" autocomplete="off"></el-input>
       </el-form-item>
-      <el-form-item label="头像上传">
+      <el-form-item label="状态" prop="userStatus">
+        <el-switch v-model="ruleForm2.userStatus"></el-switch>
+      </el-form-item>
+      <el-form-item label="头像上传" prop="avatar">
         <!-- 上传进度条 -->
           <el-upload
             class="avatar-uploader"
@@ -42,7 +45,7 @@
             :on-progress="uploadFileProcess"
             :before-upload="beforeAvatarUpload"
           >
-            <img v-if="ruleForm2.avatar" :src="ruleForm.avatar" class="avatar" />
+            <img v-if="ruleForm2.avatar" :src="ruleForm2.avatar" class="avatar" />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
           <span class="up-desc">说明: 上传图片大小不能超过20M</span>
@@ -80,6 +83,8 @@ export default {
     var validatePass = (rule, value, callback) => {
       if (value === "") {
         callback(new Error("请输入密码"))
+      } else if (value.toString().length < 6) {
+        callback(new Error("密码长度不能低于6位"))
       } else {
         if (this.ruleForm2.checkPass !== "") {
           this.$refs.ruleForm2.validateField("checkPass")
@@ -109,9 +114,13 @@ export default {
         checkPass: "",
         roleId: null,
         phone: "",
+        userStatus: true,
         username: ""
       },
       rules: {
+        avatar: [
+          { required: true, message: "用户头像不能为空", trigger: "change" }
+        ],
         username: [
           { required: true, message: "请输入用户名", trigger: "blur" },
           { min: 3, max: 18, message: "长度在 3 到 18 个字符", trigger: "blur" }
@@ -124,6 +133,12 @@ export default {
         ],
         roleId: [
           { required: true, message: "请选择用户角色", trigger: "change" }
+        ],
+        phone: [
+          { required: true, message: "请输入手机号码", trigger: "blur" }
+        ],
+        userStatus: [
+          { required: true, message: "请选择用户状态", trigger: "change" }
         ]
       }
     }
@@ -140,24 +155,20 @@ export default {
         if (!userId) {
           return false
         }
-        that.$request.fetchGetUserInfoId({id: userId})
+        that.$request.fetchGetUserInfoId({sysUserId: userId})
           .then(function (res) {
-            console.log(res)
-            res.data.password = ""
-            if (res.data.status === "1") {
-              res.data.status = true
-            } else {
-              res.data.status = false
-            }
-
-            that.ruleForm2 = res.data
-            that.roleName = true
-            for (let i = 0; i < that.roleData.length; i++) {
-              if (that.$store.getters.info.role === "超级管理员" && that.$store.getters.info.uid !== userId) {
-                that.roleName = false
+                  if (res.data.code === 200) {
+                  that.ruleForm2 = res.data.data
+                  that.roleName = true
+                  for (let i = 0; i < that.roleData.length; i++) {
+                    if (that.$store.getters.info.role === "超级管理员" && that.$store.getters.info.uid !== userId) {
+                      that.roleName = false
+                    }
+                  }
+                  return false
+              } else {
+                this.$message.error("数据加载失败")
               }
-            }
-            return false
           })
           .catch(function (error) {
             console.log(error)
@@ -187,15 +198,28 @@ export default {
               }
             }
           }
-          console.log(newData)
-          return
           fetchFn(newData).then((res) => {
-            that.$message({
-              showClose: true,
-              message: res.data.message,
-              type: "success"
-            })
-            that.visible = false
+            if (res.data.code === 200) {
+              if (!that.userId) {
+                this.$message.success("新增成功")
+              } else {
+                this.$message.success("修改成功")
+              }
+              that.visible = false
+            } else if (res.data.code === 500) {
+              this.$message.error(res.data.msg)
+            } else {
+              if (!that.userId) {
+                this.$message.error("新增失败")
+              } else {
+                this.$message.error("修改失败")
+              }
+            }
+            // that.$message({
+            //   showClose: true,
+            //   message: res.data.message,
+            //   type: "success"
+            // })
           }).catch((err) => {
             console.log(err)
           })

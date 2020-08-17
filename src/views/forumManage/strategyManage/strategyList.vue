@@ -82,7 +82,7 @@
         </el-table-column>
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
-            <el-button size="mini">
+            <el-button size="mini" v-role-btn="'57'">
               <el-link :href="httpUrl+'/strategy.html?id='+scope.row.id" target="_blank">查看</el-link>
             </el-button>
             <el-popover
@@ -113,9 +113,9 @@
                   </el-col>
                 </el-row>
               </template>
-              <el-button size="mini" slot="reference">状态修改</el-button>
+              <el-button size="mini" slot="reference" v-role-btn="'57'">状态修改</el-button>
             </el-popover>
-            <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row.id)">
+            <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row.id)" v-role-btn="'58'">
               <i class="el-icon-delete"></i>删除
             </el-button>
           </template>

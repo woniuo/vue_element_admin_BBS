@@ -14,7 +14,7 @@
             </el-form>
           </el-col>
           <el-col :span="12" align="right" v-if="multipleSelection.length>0">
-            <el-button type="danger" @click="delStatusAll">批量删除</el-button>
+            <el-button type="danger" @click="delStatusAll" v-role-btn="'102'">批量删除</el-button>
           </el-col>
         </el-row>
       </el-card>
@@ -63,7 +63,7 @@
         <el-table-column label="发布人" prop="name" align="center"></el-table-column>
         <el-table-column label="状态" width="100">
           <template slot-scope="scope">
-            <el-switch v-model="scope.row.status" @change="setStatus($event, scope.row.id)"></el-switch>
+            <el-switch v-model="scope.row.status" @change="setStatus($event, scope.row.id)" v-role-btn="'100'"></el-switch>
           </template>
         </el-table-column>
         <el-table-column label="排序权重" width="100" prop="num" align="center"></el-table-column>
@@ -71,11 +71,11 @@
         <el-table-column label="操作" align="center" width="250">
           <template slot-scope="scope">
             <router-link :to="{ name:'activeEdit', query:{id:scope.row.id} }">
-              <el-button size="mini" type="primary">
+              <el-button size="mini" type="primary" v-role-btn="'101'">
                 <i class="el-icon-edit"></i>编 辑
               </el-button>
             </router-link>
-            <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row.id)">
+            <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row.id)" v-role-btn="'102'">
               <i class="el-icon-delete"></i>删 除
             </el-button>
           </template>

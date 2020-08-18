@@ -14,9 +14,9 @@
             </el-form>
           </el-col>
           <el-col :span="12" align="right" v-if="multipleSelection.length>0">
-            <el-button type="success" @click="setStatusAll(1)">批量启用</el-button>
-            <el-button type="primary" @click="setStatusAll(2)">批量禁用</el-button>
-            <el-button type="danger" @click="delStatusAll">批量删除</el-button>
+            <el-button type="success" @click="setStatusAll(1)" v-role-btn="'174'">批量启用</el-button>
+            <el-button type="primary" @click="setStatusAll(2)" v-role-btn="'174'">批量禁用</el-button>
+            <el-button type="danger" @click="delStatusAll" v-role-btn="'176'">批量删除</el-button>
           </el-col>
         </el-row>
       </el-card>
@@ -53,17 +53,18 @@
             v-model="scope.row.status"
             @change="setStatus(scope.$index, scope.row.id, scope.row.status)"
             active-color="#13ce66"
-            inactive-color="#ff4949">
+            inactive-color="#ff4949"
+            v-role-btn="'174'">
           </el-switch>
           </template>
         </el-table-column>
         <el-table-column label="操作" align="center" width="350">
           <template slot-scope="scope">
-           <el-button size="mini" @click="lookNotice(scope.row.id)">查看公告</el-button>
+           <el-button size="mini" @click="lookNotice(scope.row.id)" v-role-btn="'177'">查看公告</el-button>
            <router-link :to="{name: 'announcementEdit', query: {id: scope.row.id}}">
-             <el-button type="primary" size="mini" >编辑</el-button>
+             <el-button type="primary" size="mini" v-role-btn="'175'">编辑</el-button>
            </router-link>
-            <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row.id)">
+            <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row.id)" v-role-btn="'176'">
               <i class="el-icon-delete"></i>删除
             </el-button>
           </template>

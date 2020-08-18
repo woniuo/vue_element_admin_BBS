@@ -25,7 +25,7 @@
                 ></el-input>
               </el-col>
               <el-col :span="4">
-                <el-button type="primary" @click="addGameType">新 增</el-button>
+                <el-button type="primary" @click="addGameType" v-role-btn="'136'">新 增</el-button>
               </el-col>
             </el-row>
           </el-col>
@@ -54,6 +54,7 @@
               size="mini"
               type="primary"
               @click="saveGameType(scope.$index, scope.row.id, scope.row.name)"
+              v-role-btn="'137'"
             >
               <i class="el-icon-edit"></i>保 存
             </el-button>
@@ -61,6 +62,7 @@
               size="mini"
               type="danger"
               @click="gameTypeDelete(scope.$index, scope.row.id)"
+              v-role-btn="'138'"
             >
               <i class="el-icon-delete"></i>删 除
             </el-button>

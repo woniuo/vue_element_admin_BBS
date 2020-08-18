@@ -21,7 +21,7 @@
             </el-form>
           </el-col>
           <el-col :span="12" align="right" v-if="multipleSelection.length>0">
-            <el-button type="danger" @click="setStatusAll">一键禁用所有用户</el-button>
+            <el-button type="danger" @click="setStatusAll" v-role-btn="'80'">一键禁用所有用户</el-button>
           </el-col>
         </el-row>
       </el-card>
@@ -86,13 +86,12 @@
           <template slot-scope="scope">
             <el-popover trigger="hover" placement="right">
               <p>点击修改状态</p>
-              <div slot="reference" class="name-wrapper">
+              <div slot="reference" class="name-wrapper"  v-role-btn="'80'">
                 <el-tag
                   v-if="scope.row.status === 1"
                   type="success"
                   close-transition
                   @click="setStatus(scope.row.id,1)"
-                  v-role-btn="'80'"
                 >启用</el-tag>
                 <el-tag v-else type="danger" close-transition @click="setStatus(scope.row.id,2)">禁用</el-tag>
               </div>

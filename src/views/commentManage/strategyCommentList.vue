@@ -88,6 +88,7 @@
                   v-if="scope.row.replyCount !== 0"
                   size="mini"
                   @click="lookComment(scope.$index, scope.row)"
+                  v-role-btn="'69'"
                 >
                   <i class="fa fa-eye" aria-hidden="true"></i>查看回复
                 </el-button>
@@ -98,6 +99,7 @@
                   size="mini"
                   type="danger"
                   @click="handleDelete(scope.$index, scope.row.id)"
+                  v-role-btn="'70'"
                 >
                   <i class="el-icon-delete"></i>删除
                 </el-button>

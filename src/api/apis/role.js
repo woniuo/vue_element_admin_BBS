@@ -37,6 +37,14 @@ export default {
     return axios.get(roleUrls.searchRolePermissions, {params: data})
   },
   
+  // 过滤用户角色查询所有权限
+  fetchSearchRolePermissionsAll (data) {
+    return axios.get(roleUrls.searchRolePermissionsAll, data)
+  },
+  // 根据当前子节点找父节点
+  fetchSearchRoleParent (data) {
+    return axios.get(roleUrls.searchRoleParert, {params: data})
+  },
   // 新增菜单按钮
   fetchAddMenuButton(data) {
     return axios.post(roleUrls.addMenuButton, data)

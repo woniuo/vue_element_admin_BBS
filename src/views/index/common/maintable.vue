@@ -72,8 +72,7 @@
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
             <el-button
-              size="mini"
-              @click="handleEdit(scope.$index, scope.row)">
+              size="mini">
               <el-link :href="httpUrl+'/strategy.html?id='+scope.row.id" target="_blank">详 情</el-link>
               </el-button>
              <el-popover

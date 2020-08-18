@@ -19,7 +19,10 @@ export default {
   rolePermissions: "/tbrole/updateRolePermission",
   // 查询角色的所有权限
   searchRolePermissions: "/tbrole/rolePermission",
-
+  // 过滤用户角色查询所有权限
+  searchRolePermissionsAll: "/tbrole/allPermission",
+  // 根据当前子节点找父节点
+  searchRoleParert: "/tbrole/getParentId",
   // 新增菜单按钮
   addMenuButton: "/permission/insertPermission"
 }

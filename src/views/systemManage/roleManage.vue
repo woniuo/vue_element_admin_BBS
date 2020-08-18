@@ -78,36 +78,46 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="resetForm('ruleForm')">重 置</el-button>
-        <el-button type="primary" @click="addRoleSubmit('ruleForm')" >确 定</el-button>
+        <el-button type="primary" @click="addRoleSubmit('ruleForm')">确 定</el-button>
       </div>
     </el-dialog>
     <el-dialog
       title="权限分配"
-      class="dialog2"
+      class="dialog2 hide-relative"
       @opened="setRoleData"
       :visible.sync="dialogFormVisible2"
+      @close="closeCallBack"
     >
-      <el-input placeholder="输入关键字进行过滤" v-model="filterText" style="margin-bottom: 20px"></el-input>
-      <el-row>
-        <el-col align="right">
-          <el-button type="primary" size="mini" @click="isOpenAll">展开/关闭</el-button>
-        </el-col>
-      </el-row>
-      <el-tree
-        :data="roleTree"
-        node-key="r_id"
-        show-checkbox
-        check-on-click-node
-        :default-expand-all="isSpreadAll"
-        highlight-current
-        :expand-on-click-node="false"
-        ref="permission"
-        :filter-node-method="filterNode"
-        :props="defaultProps"
-      ></el-tree>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible2 = false">取 消</el-button>
-        <el-button type="primary" @click="rolePermissionSubmit">确 定</el-button>
+      <div class="three-box">
+        <div v-if="loading" class="hide-loading">
+          <span class="el-icon-loading"></span>加载中....
+        </div>
+        <el-input placeholder="输入关键字进行过滤" v-model="filterText" style="margin-bottom: 20px"></el-input>
+        <el-row>
+          <el-col align="left" :span="12">
+            <el-button type="primary" size="mini" @click="isOpenAll">展开/关闭</el-button>
+            <el-button type="success" size="mini" @click="selectedRoleAll">一键全选/取消</el-button>
+          </el-col>
+          <el-col align="right" :span="12">
+            <el-button @click="dialogFormVisible2 = false" size="mini">取 消</el-button>
+            <el-button type="primary" @click="rolePermissionSubmit" size="mini">确 定</el-button>
+          </el-col>
+        </el-row>
+        <el-tree
+          :data="roleTree"
+          node-key="r_id"
+          show-checkbox
+          check-on-click-node
+          :default-expand-all="isSpreadAll"
+          highlight-current
+          :check-strictly="isAssociated"
+          :expand-on-click-node="false"
+          ref="permission"
+          :filter-node-method="filterNode"
+          :props="defaultProps"
+          :default-checked-keys="defatultSelectedData"
+          @check="threeClick"
+        ></el-tree>
       </div>
     </el-dialog>
   </div>
@@ -138,6 +148,11 @@ export default {
       selectData: [],
       filterText: "",
       isSpreadAll: true, // 是否展开所有权限
+      defatultSelectedData: [], // 初始化数据勾选
+      loading: true, // 树控件数据加载之前的动画
+      roleDataAll: [], // 用户存储所有权限菜单、按钮
+      isSelectedRoleAll: false, // 是否全选
+      isAssociated: true, // 是否勾选关联
       rules: {
         name: [
           { required: true, message: "请输入角色名称", trigger: "blur" },
@@ -150,6 +165,10 @@ export default {
     };
   },
   methods: {
+    // 复选框点击事件
+    threeClick () {
+      this.isAssociated = false
+    },
     isOpenAll() {
       if (this.isSpreadAll) {
         this.isSpreadAll = false;
@@ -177,16 +196,30 @@ export default {
     },
     handleEdit(index, row) {
       // 获取当前角色信息
-      this.$request.fetchGetRole({roleId: row.id}).then( res => {
+      this.$request.fetchGetRole({ roleId: row.id }).then((res) => {
         if (res.data.code === 200) {
-          let {id, description, enname, name, parentId, roleCondition} = res.data.data
-          this.ruleForm = {id, description, enname, name, parentId, roleCondition}
-          this.getList()
+          let {
+            id,
+            description,
+            enname,
+            name,
+            parentId,
+            roleCondition,
+          } = res.data.data;
+          this.ruleForm = {
+            id,
+            description,
+            enname,
+            name,
+            parentId,
+            roleCondition,
+          };
+          this.getList();
         } else {
-          this.$message.error("数据加载失败")
+          this.$message.error("数据加载失败");
         }
-      })
-      this.isEdit = true
+      });
+      this.isEdit = true;
       this.dialogFormVisible = true;
     },
     addRole() {
@@ -197,74 +230,78 @@ export default {
         parentId: 0, // 后端说的父节点id
         roleCondition: true, // 是否启用
       };
-      this.isEdit = false
+      this.isEdit = false;
       this.dialogFormVisible = true;
     },
     addRoleSubmit(formName) {
       if (!this.isEdit) {
-          this.$refs[formName].validate((valid) => {
+        this.$refs[formName].validate((valid) => {
           if (valid) {
             // 增加一个外国名
             if (!this.ruleForm.enname) {
-              this.ruleForm.enname = this.randomWord(true, 5, 10)
+              this.ruleForm.enname = this.randomWord(true, 5, 10);
             }
             if (this.ruleForm.name === "超级管理员") {
-              this.$message.error("超级管理员只能有一个!")
-              return false
+              this.$message.error("超级管理员只能有一个!");
+              return false;
             }
-            this.$request.fetchAddRole(this.ruleForm).then( res => {
+            this.$request.fetchAddRole(this.ruleForm).then((res) => {
               if (res.data.code === 200) {
-                this.dialogFormVisible = false
-                this.getList()
-                this.$message.success("增加成功")
+                this.dialogFormVisible = false;
+                this.getList();
+                this.$message.success("增加成功");
               } else {
-                this.$message.error("增加失败")
+                this.$message.error("增加失败");
               }
-            })
+            });
           } else {
-            console.log('error submit!!');
+            console.log("error submit!!");
             return false;
           }
         });
       } else {
-          this.$refs[formName].validate((valid) => {
+        this.$refs[formName].validate((valid) => {
           if (valid) {
-            this.$request.fetchEditRole(this.ruleForm).then( res => {
+            this.$request.fetchEditRole(this.ruleForm).then((res) => {
               if (res.data.code === 200) {
-                this.dialogFormVisible = false
-                this.getList()
-                this.$message.success("修改成功")
+                this.dialogFormVisible = false;
+                this.getList();
+                this.$message.success("修改成功");
               } else {
-                this.$message.error("修改失败")
+                this.$message.error("修改失败");
               }
-            })
+            });
           } else {
-            console.log('error submit!!');
+            console.log("error submit!!");
             return false;
           }
         });
       }
-      },
+    },
     resetForm(formName) {
       this.$refs[formName].resetFields();
-      this.ruleForm.description = ""
+      this.ruleForm.description = "";
     },
     rolePermissionSubmit() {
+      // 为解决字节点勾选不全父节点id丢失问题 需要做个拼接
+      let checkedKeys = this.$refs.permission.getCheckedKeys();
+      let hafCheckedKeys = this.$refs.permission.getHalfCheckedKeys();
+      // return false
       let rolePermissionData = {
-        permissionIds: this.$refs.permission.getCheckedKeys().toString(),
+        permissionIds: checkedKeys.concat(hafCheckedKeys).toString(),
         roleId: this.selectRoleId,
       };
       this.$request
         .fetchRolePermissions(rolePermissionData)
         .then((res) => {
           if (res.data.code === 200) {
-              this.$restBack(res.data, () => {
-              this.$message.success("修改成功")
+            this.$restBack(res.data, () => {
+              this.$message.success("修改成功");
               this.dialogFormVisible2 = false;
               this.getList();
             });
           } else {
-            this.$message.error("修改失败")
+            this.$message.error("修改失败");
           }
         })
         .catch((err) => {
@@ -272,7 +309,6 @@ export default {
         });
     },
     roleEdit(index, row) {
-      console.log(index, row);
       this.selectRoleId = row.id;
       this.selectData = row.permission ? row.permission.split(",") : [];
       this.dialogFormVisible2 = true;
@@ -281,15 +317,46 @@ export default {
       this.$request
         .fetchSearchRolePermissions({ roleId: this.selectRoleId })
         .then((res) => {
-            if (res.data.code === 200) {
-              this.$refs.permission.setCheckedKeys([]);
-              let permissionData =
-                res.data.data.menuArr + "," + res.data.data.buttonArr;
-              this.$refs.permission.setCheckedKeys(permissionData.split(","));
-            } else {
-              this.$message.error("数据加载失败")
-            }
+          if (res.data.code === 200) {
+            this.$refs.permission.setCheckedKeys([]);
+
+            let permissionData =
+              res.data.data.menuArr + "," + res.data.data.buttonArr;
+            this.$refs.permission.setCheckedKeys(permissionData.split(","));
+            this.isAssociated = false
+            // this.defatultSelectedData = permissionData.split(",")
+          } else {
+            this.$message.error("数据加载失败");
+          }
+          this.loading = false;
         });
+    },
+    // 一键全选
+    selectedRoleAll() {
+      if (!this.isSelectedRoleAll) {
+          let permissionData = this.roleDataAll.toString();
+          this.$refs.permission.setCheckedKeys(permissionData.split(","));
+      } else {
+          this.$refs.permission.setCheckedKeys([]);
+      }
+      this.isSelectedRoleAll = !this.isSelectedRoleAll
+    },
+    // 关闭回调
+    closeCallBack() {
+      this.loading = true;
+      this.isAssociated = true
+    },
+    // 获取所有权限菜单、按钮
+    getRoleDataAll() {
+      this.$request.fetchSearchRolePermissionsAll().then((res) => {
+        if (res.data.code === 200) {
+          let menuArr = res.data.data.menuArr;
+          let btnArr = res.data.data.buttonArr;
+          this.roleDataAll = menuArr.concat(btnArr);
+        } else {
+          console.log("接口调取失败");
+        }
+      });
     },
     handleDelete(index, row) {
       let that = this;
@@ -297,16 +364,16 @@ export default {
         .fetchDelRole({
           roleId: row.id,
         })
-        .then( res => {
+        .then((res) => {
           if (res.data.code === 200) {
-            this.tableData.splice(index, 1)
+            this.tableData.splice(index, 1);
             this.$message({
               showClose: true,
               message: "删除成功",
               type: "success",
             });
           } else {
-            this.$message.error("删除失败")
+            this.$message.error("删除失败");
           }
         })
         .catch((err) => {
@@ -332,24 +399,25 @@ export default {
       return data.r_name.indexOf(value) !== -1;
     },
     // 随机生成由字母+数字的字符串
-    randomWord (randomFlag, min, max) {
+    randomWord(randomFlag, min, max) {
       // randomFlag: Boolean 是否随机个数
       // min 最少个数
       // max 最大个数
-      var str = ""
-      var range = min
-      var arr = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
+      var str = "";
+      var range = min;
+      var arr = ["0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","A","B",
+        "C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z",];
       // 随机产生
       if (randomFlag) {
-        range = Math.round(Math.random() * (max - min)) + min
+        range = Math.round(Math.random() * (max - min)) + min;
       }
-      var pos = ""
+      var pos = "";
       for (var i = 0; i < range; i++) {
-        pos = Math.round(Math.random() * (arr.length - 1))
-        str += arr[pos]
+        pos = Math.round(Math.random() * (arr.length - 1));
+        str += arr[pos];
       }
-      return str
-    }
+      return str;
+    },
   },
   watch: {
     filterText(val) {
@@ -359,7 +427,7 @@ export default {
   computed: {
     roleTree: function () {
       let roleData = this.$store.getters.roleData;
-      console.log(roleData)
+
       for (let i = 0; i < roleData.length; i++) {
         if (roleData[i].redirect === "/404") {
           roleData.splice(i, 1);
@@ -370,6 +438,7 @@ export default {
   },
   mounted() {
     this.getList();
+    this.getRoleDataAll();
   },
 };
 </script>
@@ -398,6 +467,11 @@ export default {
 .el-form-item__content {
   margin-left: 120px;
   width: 300px;
+}
+.three-box {
+  height: 600px;
+  overflow: hidden;
+  overflow-y: scroll;
 }
 </style>
 

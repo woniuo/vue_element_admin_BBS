@@ -14,7 +14,7 @@
             </el-form>
           </el-col>
           <el-col :span="12" align="right">
-            <el-button type="primary" @click="addGradTitle">新增头衔</el-button>
+            <el-button type="primary" @click="addGradTitle" v-role-btn="'151'">新增头衔</el-button>
           </el-col>
         </el-row>
       </el-card>
@@ -38,8 +38,8 @@
         <el-table-column label="描述" prop="description" align="center"></el-table-column>
         <el-table-column label="操作" align="center" width="350">
           <template slot-scope="scope">
-            <el-button type="primary" size="mini" @click="getGradTitle(scope.row.id)">编辑</el-button>
-            <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row.id)">
+            <el-button type="primary" size="mini" @click="getGradTitle(scope.row.id)" v-role-btn="'152'">编辑</el-button>
+            <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row.id)" v-role-btn="'153'">
               <i class="el-icon-delete"></i>删除
             </el-button>
           </template>
@@ -110,8 +110,8 @@
           <el-row :span="24">
             <el-col :span="24" align="right">
               <el-form-item align="center">
-                <el-button v-if="isNewAdd" type="primary" @click="submit('ruleForm')">增 加</el-button>
-                <el-button v-else type="primary" @click="editGardTitle('ruleForm')">保存</el-button>
+                <el-button v-if="isNewAdd" type="primary" @click="submit('ruleForm')" >增 加</el-button>
+                <el-button v-else type="primary" @click="editGardTitle('ruleForm')" >保存</el-button>
                 <el-button @click="resetForm('ruleForm')">重 置</el-button>
               </el-form-item>
             </el-col>

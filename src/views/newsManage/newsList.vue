@@ -14,7 +14,7 @@
             </el-form>
           </el-col>
           <el-col :span="12" align="right" v-if="multipleSelection.length>0">
-            <el-button type="danger" @click="delStatusAll">批量删除</el-button>
+            <el-button type="danger" @click="delStatusAll" v-role-btn="'79'">批量删除</el-button>
           </el-col>
         </el-row>
       </el-card>
@@ -40,9 +40,9 @@
         <el-table-column label="发布时间" width="250" prop="createTime" align="center" sortable></el-table-column>
         <el-table-column label="操作" align="center" width="350">
           <template slot-scope="scope">
-           <el-button size="mini" @click="lookNews(scope.row.id)">查看</el-button>
-            <el-button type="primary" size="mini" @click="editNews(scope.row.id)">编辑</el-button>
-            <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row.id)">
+           <el-button size="mini" @click="lookNews(scope.row.id)" v-role-btn="'77'">查看</el-button>
+            <el-button type="primary" size="mini" @click="editNews(scope.row.id)" v-role-btn="'78'">编辑</el-button>
+            <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row.id)" v-role-btn="'79'">
               <i class="el-icon-delete"></i>删除
             </el-button>
           </template>

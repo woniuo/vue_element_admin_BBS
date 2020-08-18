@@ -14,7 +14,7 @@
             </el-form>
           </el-col>
           <el-col :span="12" align="right">
-            <el-button type="primary" @click="addGame">新增游戏</el-button>
+            <el-button type="primary" @click="addGame" v-role-btn="'129'">新增游戏</el-button>
           </el-col>
         </el-row>
       </el-card>
@@ -86,6 +86,7 @@
                           icon="el-icon-plus"
                           circle
                           @click="addVersions(scope.row.id)"
+                          v-role-btn="'133'"
                         ></el-button>
                       </el-col>
                     </el-row>
@@ -134,12 +135,14 @@
                                   icon="el-icon-edit"
                                   circle
                                   @click="editVersions(index, bitem.id, scope.row.id)"
+                                  v-role-btn="'134'"
                                 ></el-button>
                                 <el-button
                                   type="danger"
                                   icon="el-icon-delete"
                                   circle
                                   @click="delVersions(index, bitem.id)"
+                                  v-role-btn="'135'"
                                 ></el-button>
                               </el-col>
                             </el-row>
@@ -237,13 +240,13 @@
                   </el-col>
                 </el-row>
               </template>
-              <el-button size="mini" slot="reference">状态修改</el-button>
+              <el-button size="mini" slot="reference" v-role-btn="'130'">状态修改</el-button>
             </el-popover>
-            <el-button size="mini" type="primary" @click="editGame(scope.$index, scope.row.id)">
+            <el-button size="mini" type="primary" @click="editGame(scope.$index, scope.row.id)" v-role-btn="'131'">
               <i class="el-icon-edit"></i>
               修 改
             </el-button>
-            <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row.id)">
+            <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row.id)" v-role-btn="'132'">
               <i class="el-icon-delete"></i>删 除
             </el-button>
           </template>

@@ -17,14 +17,14 @@
     }"
         >
           <el-input v-model="item.name" class="w400" clearable maxlength="15" show-word-limit @change="$forceUpdate()"></el-input>
-          <el-button @click.prevent="removeDomain(item)" type="danger">删除</el-button>
+          <el-button @click.prevent="removeDomain(item)" type="danger" v-role-btn="'121'">删除</el-button>
         </el-form-item>
         <el-form-item v-if="lastReport && lastReport.length>0" :label="lastReport[0].name">
           <el-input v-model="lastReport[0].name" class="w400" :disabled="true"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="submitForm('dynamicValidateForm')">提交</el-button>
-          <el-button @click="addDomain">新增类型</el-button>
+          <el-button type="primary" @click="submitForm('dynamicValidateForm')" v-role-btn="'119'">提交</el-button>
+          <el-button @click="addDomain" v-role-btn="'120'">新增类型</el-button>
           <el-button @click="resetForm('dynamicValidateForm')">重置</el-button>
         </el-form-item>
       </el-form>

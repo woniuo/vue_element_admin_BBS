@@ -140,9 +140,9 @@
                   </el-col>
                 </el-row>
               </template>
-              <el-button size="mini" slot="reference">状态修改</el-button>
+              <el-button size="mini" slot="reference" v-role-btn="'117'">状态修改</el-button>
             </el-popover>
-            <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row.id)">
+            <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row.id)" v-role-btn="'118'">
               <i class="el-icon-delete"></i>删除
             </el-button>
           </template>

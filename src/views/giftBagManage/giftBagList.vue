@@ -15,7 +15,7 @@
           </el-col>
           <el-col :span="12" align="right">
             <router-link to="/giftBagAdd">
-              <el-button type="primary">新增礼包</el-button>
+              <el-button type="primary" v-role-btn="'143'">新增礼包</el-button>
             </router-link>
           </el-col>
         </el-row>
@@ -64,13 +64,13 @@
         <el-table-column label="发布时间" width="200" prop="createTime" align="center" sortable></el-table-column>
         <el-table-column label="操作" align="center" width="350">
           <template slot-scope="scope">
-            <el-button size="mini" @click="lookGiftBag(scope.row.id)">查 看</el-button>
+            <el-button size="mini" @click="lookGiftBag(scope.row.id)" v-role-btn="'144'">查 看</el-button>
             <router-link :to="{name: 'giftBagEdit', query: {id:scope.row.id}}">
-              <el-button type="primary" size="mini" @click="editGiftBag()">
+              <el-button type="primary" size="mini" @click="editGiftBag()" v-role-btn="'145'">
                 <i class="el-icon-edit"></i>编 辑
               </el-button>
             </router-link>
-            <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row.id)">
+            <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row.id)" v-role-btn="'146'">
               <i class="el-icon-delete"></i>删 除
             </el-button>
           </template>

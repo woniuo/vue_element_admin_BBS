@@ -14,9 +14,9 @@
             </el-form>
           </el-col>
           <el-col :span="12" align="right" v-if="multipleSelection.length>0">
-            <el-button type="success" @click="setStatusAll(1)">批量审核通过</el-button>
-            <el-button type="primary" @click="setStatusAll(2)">批量审核不通过</el-button>
-            <el-button type="danger" @click="delStatusAll">批量删除</el-button>
+            <el-button type="success" @click="setStatusAll(1)" v-role-btn="'66'">批量审核通过</el-button>
+            <el-button type="primary" @click="setStatusAll(2)" v-role-btn="'66'">批量审核不通过</el-button>
+            <el-button type="danger" @click="delStatusAll" v-role-btn="'67'">批量删除</el-button>
           </el-col>
         </el-row>
       </el-card>
@@ -80,7 +80,7 @@
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
             <el-button size="mini">
-              <el-link :href="httpUrl+'/picture.html?id='+scope.row.id" target="_blank">查看</el-link>
+              <el-link :href="httpUrl+'/picture.html?id='+scope.row.id" target="_blank" v-role-btn="'65'">查看</el-link>
             </el-button>
             <el-popover
               placement="top"
@@ -110,9 +110,9 @@
                   </el-col>
                 </el-row>
               </template>
-              <el-button size="mini" slot="reference">状态修改</el-button>
+              <el-button size="mini" slot="reference" v-role-btn="'66'">状态修改</el-button>
             </el-popover>
-            <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row.id)">
+            <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row.id)" v-role-btn="'67'">
               <i class="el-icon-delete"></i>删除
             </el-button>
           </template>

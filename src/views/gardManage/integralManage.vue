@@ -36,7 +36,7 @@
           </el-row>
           <el-row>
             <el-col align="right">
-              <el-button type="primary" size="mini" @click="save(index, item.id)">保 存</el-button>
+              <el-button type="primary" size="mini" @click="save(index, item.id)" v-role-btn="'147'">保 存</el-button>
             </el-col>
           </el-row>
         </el-card>
@@ -48,7 +48,7 @@
           <el-row>
             <el-col :span="12">签到扩展配置</el-col>
             <el-col :span="12" align="right">
-              <el-button type="primary" @click="addSignConfig">新 增</el-button>
+              <el-button type="primary" @click="addSignConfig" v-role-btn="'148'">新 增</el-button>
             </el-col>
           </el-row>
         </el-card>
@@ -79,11 +79,13 @@
                     type="primary"
                     size="small"
                     @click="editSignConfig(scope.$index, scope.row.id)"
+                    v-role-btn="'149'"
                   >编辑</el-button>
                   <el-button
                     type="danger"
                     size="small"
                     @click="delSignConfig(scope.$index, scope.row.id)"
+                    v-role-btn="'150'"
                   >删除</el-button>
                 </template>
               </el-table-column>

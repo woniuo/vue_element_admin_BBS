@@ -18,7 +18,7 @@
             icon="el-icon-circle-plus-outline"
             @click="addUserFn"
             plain
-            v-role-btn="'106'"
+            v-role-btn="'110'"
           >添加账号</el-button>
         </el-col>
       </el-row>
@@ -37,15 +37,15 @@
           width="150"
         >
           <template slot-scope="scope">
-            <el-switch v-model="scope.row.userStatus" @change="setStatus($event, scope.row.id)" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+            <el-switch v-model="scope.row.userStatus" @change="setStatus($event, scope.row.id)" active-color="#13ce66" inactive-color="#ff4949" v-role-btn="'111'"></el-switch>
           </template>
         </el-table-column>
         <el-table-column prop="created" label="创建时间" align="center" width="200"></el-table-column>
         <el-table-column prop="updated" label="上次修改时间" align="center" width="200"></el-table-column>
         <el-table-column label="操作" align="center" width="250">
           <template slot-scope="scope">
-            <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-            <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+            <el-button size="mini" @click="handleEdit(scope.$index, scope.row)" v-role-btn="'113'">编辑</el-button>
+            <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)" v-role-btn="'112'">删除</el-button>
           </template>
         </el-table-column>
       </el-table>

@@ -1,0 +1,2 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[36],{"1fMr":function(e,n,t){"use strict";t.r(n);var r={name:"commerViews"},i=t("KHd+"),s=Object(i.a)(r,(function(){var e=this.$createElement,n=this._self._c||e;return n("div",[n("router-view")],1)}),[],!1,null,"5572239a",null);n.default=s.exports}}]);
+//# sourceMappingURL=36.6f7fe8c803a2e2885149.js.map

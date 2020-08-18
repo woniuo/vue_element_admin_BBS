@@ -152,7 +152,7 @@ export default {
       loading: true, // 树控件数据加载之前的动画
       roleDataAll: [], // 用户存储所有权限菜单、按钮
       isSelectedRoleAll: false, // 是否全选
-      isAssociated: true, // 是否勾选关联
+      isAssociated: true, // 是否勾选关联(解决回显问题)
       rules: {
         name: [
           { required: true, message: "请输入角色名称", trigger: "blur" },
